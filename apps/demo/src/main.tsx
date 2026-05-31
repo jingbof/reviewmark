@@ -100,6 +100,8 @@ Resolved: moved team dashboards out of v0 scope.
 ];
 
 type Route = "/" | "/playground" | "/spec" | "/docs" | "/examples";
+const runOnceCommand = "npx reviewmarks preview review.md";
+const installCommand = "npm install -g reviewmarks";
 
 function App() {
   const [route, setRoute] = useState<Route>(readRoute());
@@ -224,14 +226,8 @@ function Playground({
           </p>
         </div>
         <div className="install-card" aria-label="CLI install">
-          <div>
-            <span>Run once</span>
-            <code>npx reviewmarks preview review.md</code>
-          </div>
-          <div>
-            <span>Install globally</span>
-            <code>npm install -g reviewmarks</code>
-          </div>
+          <CommandCopy label="Run once" command={runOnceCommand} />
+          <CommandCopy label="Install globally" command={installCommand} />
         </div>
         <div className="signal-line" aria-label="Technical details">
           {detailItems.map((item) => (
@@ -320,6 +316,50 @@ function Playground({
       </section>
     </section>
   );
+}
+
+function CommandCopy({ label, command }: { label: string; command: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copyCommand() {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(command);
+      } else {
+        fallbackCopy(command);
+      }
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    } catch {
+      fallbackCopy(command);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    }
+  }
+
+  return (
+    <div className="command-copy">
+      <span>{label}</span>
+      <div className="command-line">
+        <code>{command}</code>
+        <button type="button" onClick={copyCommand} aria-label={`Copy command: ${command}`}>
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function fallbackCopy(value: string) {
+  const textarea = document.createElement("textarea");
+  textarea.value = value;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.append(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
 }
 
 function StatusDot({ label, muted = false }: { label: string; muted?: boolean }) {
