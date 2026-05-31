@@ -74,6 +74,12 @@ GitHub Pages deployment is configured in `.github/workflows/pages.yml`. In GitHu
 
 GitHub Pages for a private repository requires plan support. If GitHub reports that Pages is unavailable for this private repo, make the repo public, upgrade the GitHub plan, or deploy the same `apps/demo` build through Vercel.
 
+This repo also includes `vercel.json` as a fallback for the Vercel-purchased domain:
+
+```bash
+vercel --prod
+```
+
 DNS records for the Vercel-purchased domain should point to GitHub Pages:
 
 - Apex `reviewmark.dev`: `A` records to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, and `185.199.111.153`, or `ALIAS` / `ANAME` to `jingbof.github.io` if Vercel DNS supports it.
