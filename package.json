@@ -1,0 +1,20 @@
+{
+  "name": "reviewmark-repo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "ReviewMark TypeScript workspace",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm --filter @reviewmark/core build && pnpm --filter reviewmark build",
+    "check": "pnpm --filter @reviewmark/core check && pnpm --filter reviewmark check",
+    "test": "pnpm --filter @reviewmark/core test",
+    "dev": "tsx packages/reviewmark/src/cli.ts",
+    "reviewmark": "node packages/reviewmark/dist/cli.js"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  },
+  "packageManager": "pnpm@10.26.1"
+}

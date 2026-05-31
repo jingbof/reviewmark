@@ -1,0 +1,18 @@
+{
+  "name": "reviewmark",
+  "version": "0.1.0",
+  "description": "ReviewMark CLI",
+  "type": "module",
+  "bin": {
+    "reviewmark": "./dist/cli.js"
+  },
+  "main": "./dist/cli.js",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@reviewmark/core": "workspace:*"
+  }
+}

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.review.html
+*.clean.md
+.DS_Store
+.idea/
+/.idea/
