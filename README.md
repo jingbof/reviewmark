@@ -35,6 +35,8 @@ Use `~~~` as the body separator. The older `---` separator is still parsed for c
 
 ## Install CLI
 
+The CLI is published on npm as [`reviewmarks`](https://www.npmjs.com/package/reviewmarks).
+
 ```bash
 npm install -g reviewmarks
 ```
