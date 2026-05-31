@@ -5,13 +5,13 @@ ReviewMark adds hidden, structured review comments to Markdown and renders them 
 ## Install
 
 ```bash
-npm install -g @jingbof/reviewmark
+npm install -g reviewmarks
 ```
 
 Or run it without a global install:
 
 ```bash
-npx @jingbof/reviewmark preview spec.md
+npx reviewmarks preview spec.md
 ```
 
 ## Commands

@@ -1,5 +1,5 @@
 {
-  "name": "@jingbof/reviewmark",
+  "name": "reviewmarks",
   "version": "0.1.0",
   "description": "CLI for hidden, structured review comments in Markdown.",
   "type": "module",

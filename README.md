@@ -36,13 +36,13 @@ Use `~~~` as the body separator. The older `---` separator is still parsed for c
 ## Install CLI
 
 ```bash
-npm install -g @jingbof/reviewmark
+npm install -g reviewmarks
 ```
 
 Or run without a global install:
 
 ```bash
-npx @jingbof/reviewmark preview spec.md
+npx reviewmarks preview spec.md
 ```
 
 ## CLI
