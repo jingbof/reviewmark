@@ -112,7 +112,7 @@ function App() {
   }, []);
 
   const document = useMemo(() => parseReviewMark(markdown), [markdown]);
-  const previewHtml = useMemo(() => renderReviewMarkHtml(document, { title: "ReviewMark Live Preview" }), [document]);
+  const previewHtml = useMemo(() => forceDarkPreview(renderReviewMarkHtml(document, { title: "ReviewMark Live Preview" })), [document]);
   const cleanMarkdown = useMemo(() => stripReviewMarks(markdown), [markdown]);
 
   function navigate(nextRoute: Route) {
@@ -205,11 +205,20 @@ function Playground({
     <section className="playground" aria-label="ReviewMark live demo">
       <div className="intro">
         <div>
-          <h1>Markdown review comments that stay hidden until you need them.</h1>
+          <div className="signal-line">
+            <span>AI-readable</span>
+            <span>CommonMark-compatible</span>
+            <span>No backend</span>
+          </div>
+          <h1>Review comments for Markdown-native AI workflows.</h1>
           <p>
-            Write normal Markdown. Add ReviewMark blocks as hidden HTML comments. Render them as attached side
-            comments for humans, AI agents, CLIs, and IDE plugins.
+            Keep source documents clean while agents, CLIs, and editors render structured comments beside the exact
+            blocks under review.
           </p>
+          <div className="command-row" aria-label="Quick commands">
+            <code>npx reviewmark preview spec.md</code>
+            <code>reviewmark.dev/playground</code>
+          </div>
         </div>
         <div className="status-grid" aria-label="Current document status">
           <Stat label="Comments" value={comments} />
@@ -250,10 +259,27 @@ function Playground({
 
       <section className="strip-preview">
         <div>
-          <h2>Clean Markdown remains clean</h2>
-          <p>ReviewMark comments can be stripped when you need a comment-free artifact.</p>
+          <h2>Hidden in source. Visible in review.</h2>
+          <p>ReviewMark comments can be stripped, validated, or rendered without changing the underlying document.</p>
         </div>
         <pre>{cleanMarkdown}</pre>
+      </section>
+      <section className="feature-rail" aria-label="ReviewMark capabilities">
+        <article>
+          <span>01</span>
+          <h2>Agent safe</h2>
+          <p>Multiple reviewers can leave separate hidden blocks without rewriting the document.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h2>Renderer portable</h2>
+          <p>The same parser powers the browser demo, CLI output, and JetBrains preview.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h2>Markdown first</h2>
+          <p>Normal Markdown preview stays readable because comments are stored as HTML comments.</p>
+        </article>
       </section>
     </section>
   );
@@ -370,6 +396,47 @@ function ContentPage({ title, deck, children }: { title: string; deck: string; c
       <div className="content-grid">{children}</div>
     </section>
   );
+}
+
+function forceDarkPreview(html: string): string {
+  const css = `
+    :root {
+      --rm-bg: #05070b;
+      --rm-paper: #0d1118;
+      --rm-ink: #eef6ff;
+      --rm-muted: #93a4b8;
+      --rm-border: #233041;
+      --rm-accent: #68f2d2;
+      --rm-accent-soft: #102a2c;
+      --rm-issue: #f0a15f;
+      --rm-critical: #ff6f9d;
+      --rm-praise: #8df0a7;
+      --rm-note: #8ea4ff;
+      --rm-shadow: none;
+    }
+    body {
+      background:
+        radial-gradient(circle at 12% 4%, rgba(104, 242, 210, 0.13), transparent 34rem),
+        #05070b;
+    }
+    .reviewmark-shell { max-width: 1320px; padding: 22px; }
+    .reviewmark-document, .reviewmark-sidebar, .reviewmark-diagnostics {
+      background: rgba(13, 17, 24, 0.94);
+      border-color: #233041;
+      box-shadow: 0 0 0 1px rgba(104, 242, 210, 0.04), 0 24px 80px rgba(0, 0, 0, 0.34);
+    }
+    .reviewmark-block.has-comments {
+      border-color: rgba(104, 242, 210, 0.3);
+      background: rgba(13, 34, 35, 0.6);
+    }
+    .reviewmark-comment {
+      background: rgba(20, 26, 36, 0.96);
+    }
+    .reviewmark-sidebar a {
+      background: rgba(104, 242, 210, 0.08);
+    }
+  `;
+  return html.replace("</style>", `${css}</style>`);
 }
 
 function readRoute(): Route {
