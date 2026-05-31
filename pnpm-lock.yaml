@@ -52,11 +52,7 @@ importers:
         specifier: ^18.0.4
         version: 18.0.4
 
-  packages/reviewmark:
-    dependencies:
-      '@reviewmark/core':
-        specifier: workspace:*
-        version: link:../core
+  packages/reviewmark: {}
 
 packages:
 

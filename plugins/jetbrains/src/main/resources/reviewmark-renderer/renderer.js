@@ -5,7 +5,7 @@
 var import_promises = require("node:fs/promises");
 var import_node_path = require("node:path");
 
-// packages/core/dist/parse.js
+// packages/core/src/parse.ts
 var REVIEW_COMMENT_RE = /<!--\s*reviewmark\b([\s\S]*?)-->/gi;
 var CANONICAL_BODY_SEPARATOR = "~~~";
 var LEGACY_BODY_SEPARATOR = "---";
@@ -214,10 +214,8 @@ function collectLeadingMetaLines(lines) {
 function trimBlankLines(lines) {
   let start = 0;
   let end = lines.length;
-  while (start < end && lines[start].trim() === "")
-    start += 1;
-  while (end > start && lines[end - 1].trim() === "")
-    end -= 1;
+  while (start < end && lines[start].trim() === "") start += 1;
+  while (end > start && lines[end - 1].trim() === "") end -= 1;
   return lines.slice(start, end);
 }
 function extractMarkdownBlocks(markdown) {
@@ -279,16 +277,11 @@ function extractMarkdownBlocks(markdown) {
 }
 function detectBlockType(lines, index) {
   const line = lines[index];
-  if (/^\s{0,3}#{1,6}\s+/.test(line))
-    return "heading";
-  if (/^\s{0,3}(`{3,}|~{3,})/.test(line))
-    return "code";
-  if (/^\s{0,3}([-*_])(?:\s*\1){2,}\s*$/.test(line))
-    return "thematicBreak";
-  if (/^\s{0,3}(?:[-+*]|\d+[.)])\s+/.test(line))
-    return "list";
-  if (/^\s{0,3}>/.test(line))
-    return "blockquote";
+  if (/^\s{0,3}#{1,6}\s+/.test(line)) return "heading";
+  if (/^\s{0,3}(`{3,}|~{3,})/.test(line)) return "code";
+  if (/^\s{0,3}([-*_])(?:\s*\1){2,}\s*$/.test(line)) return "thematicBreak";
+  if (/^\s{0,3}(?:[-+*]|\d+[.)])\s+/.test(line)) return "list";
+  if (/^\s{0,3}>/.test(line)) return "blockquote";
   if (line.includes("|") && lines[index + 1] && /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[index + 1])) {
     return "table";
   }
@@ -309,8 +302,7 @@ function findTargetBlock(blocks, commentLine) {
 function attachReviews(blocks, comments) {
   const reviews = /* @__PURE__ */ new Map();
   for (const comment of comments) {
-    if (comment.attachedToBlockIndex === void 0)
-      continue;
+    if (comment.attachedToBlockIndex === void 0) continue;
     const existing = reviews.get(comment.attachedToBlockIndex) ?? [];
     existing.push(comment);
     reviews.set(comment.attachedToBlockIndex, existing);
@@ -324,8 +316,7 @@ function findDuplicateIds(comments) {
   const seen = /* @__PURE__ */ new Set();
   const duplicates = /* @__PURE__ */ new Set();
   for (const comment of comments) {
-    if (seen.has(comment.id))
-      duplicates.add(comment.id);
+    if (seen.has(comment.id)) duplicates.add(comment.id);
     seen.add(comment.id);
   }
   return Array.from(duplicates);
@@ -349,8 +340,7 @@ function fnv1a(value) {
 function lineNumberAt(text, offset) {
   let line = 1;
   for (let index = 0; index < offset; index += 1) {
-    if (text.charCodeAt(index) === 10)
-      line += 1;
+    if (text.charCodeAt(index) === 10) line += 1;
   }
   return line;
 }
@@ -1597,7 +1587,7 @@ var Xt = g.parseInline;
 var Vt = b.parse;
 var Yt = x.lex;
 
-// packages/core/dist/render-html.js
+// packages/core/src/render-html.ts
 function renderReviewMarkHtml(input, options = {}) {
   const doc = typeof input === "string" ? parseReviewMark(input) : input;
   const title = options.title ?? "ReviewMark";
@@ -1677,16 +1667,14 @@ function renderSidebar(comments) {
 </aside>`;
 }
 function renderDiagnostics(doc) {
-  if (doc.diagnostics.length === 0)
-    return "";
+  if (doc.diagnostics.length === 0) return "";
   const items = doc.diagnostics.map((diagnostic) => `<li class="${escapeHtml(diagnostic.level)}">${diagnostic.line ? `Line ${diagnostic.line}: ` : ""}${escapeHtml(diagnostic.code)} - ${escapeHtml(diagnostic.message)}</li>`).join("");
   return `<section class="reviewmark-diagnostics" id="reviewmark-diagnostics"><h2>Diagnostics</h2><ul>${items}</ul></section>`;
 }
 function groupCommentsByBlock(comments) {
   const groups = /* @__PURE__ */ new Map();
   for (const comment of comments) {
-    if (comment.attachedToBlockIndex === void 0)
-      continue;
+    if (comment.attachedToBlockIndex === void 0) continue;
     const commentsForBlock = groups.get(comment.attachedToBlockIndex) ?? [];
     commentsForBlock.push(comment);
     groups.set(comment.attachedToBlockIndex, commentsForBlock);

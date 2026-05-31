@@ -1,19 +1,41 @@
 {
-  "name": "reviewmark",
+  "name": "@jingbof/reviewmark",
   "version": "0.1.0",
-  "description": "ReviewMark CLI",
+  "description": "CLI for hidden, structured review comments in Markdown.",
   "type": "module",
   "bin": {
-    "reviewmark": "./dist/cli.js"
+    "reviewmark": "dist/cli.js"
   },
   "main": "./dist/cli.js",
-  "files": ["dist"],
+  "homepage": "https://reviewmark.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jingbof/reviewmark.git",
+    "directory": "packages/reviewmark"
+  },
+  "bugs": {
+    "url": "https://github.com/jingbof/reviewmark/issues"
+  },
+  "keywords": [
+    "markdown",
+    "review",
+    "comments",
+    "cli",
+    "ai"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist/cli.js"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "esbuild src/cli.ts --bundle --platform=node --format=esm --target=node20 --alias:@reviewmark/core=../core/src/index.ts --outfile=dist/cli.js && chmod +x dist/cli.js",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "tsx --test src/*.test.ts"
-  },
-  "dependencies": {
-    "@reviewmark/core": "workspace:*"
   }
 }

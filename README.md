@@ -23,7 +23,7 @@ A ReviewMark comment applies to the nearest previous non-review Markdown block. 
 
 Supported metadata:
 
-- `id`: optional stable id. Missing ids are generated as `rm_<8-char-sha1>` from author, body, and start line.
+- `id`: optional stable id. Missing ids are generated as `rm_<8-char-hash>` from author, body, and start line.
 - `author`: reviewer name. Defaults to `unknown`.
 - `type`: `note`, `issue`, `suggestion`, `question`, or `praise`. Defaults to `note`.
 - `status`: `open`, `resolved`, or `rejected`. Defaults to `open`.
@@ -36,13 +36,13 @@ Use `~~~` as the body separator. The older `---` separator is still parsed for c
 ## Install CLI
 
 ```bash
-npm install -g reviewmark
+npm install -g @jingbof/reviewmark
 ```
 
 Or run without a global install:
 
 ```bash
-npx reviewmark preview spec.md
+npx @jingbof/reviewmark preview spec.md
 ```
 
 ## CLI
@@ -61,31 +61,22 @@ reviewmark preview spec.md
 
 ## Demo Site
 
-The live demo app lives in `apps/demo` and is designed for GitHub Pages at `reviewmark.dev`.
+The live demo app lives in `apps/demo` and is deployed at <https://reviewmark.dev>.
 
 ```bash
 pnpm dev:site
 pnpm build:site
 ```
 
-The site is a static Vite/React app. It reuses `@reviewmark/core` directly, so the browser playground exercises the same parser and HTML renderer as the CLI and JetBrains plugin.
+The site is a static Vite/React app. It reuses the internal `@reviewmark/core` workspace package directly, so the browser playground exercises the same parser and HTML renderer as the CLI and JetBrains plugin.
 
-GitHub Pages deployment is configured in `.github/workflows/pages.yml`. After Pages support is available for the repo, set repository variable `ENABLE_GITHUB_PAGES=true`, set Pages to deploy from GitHub Actions, and configure the custom domain as `reviewmark.dev`.
-
-GitHub Pages for a private repository requires plan support. If GitHub reports that Pages is unavailable for this private repo, make the repo public, upgrade the GitHub plan, or deploy the same `apps/demo` build through Vercel.
-
-This repo also includes `vercel.json` as a fallback for the Vercel-purchased domain:
+Vercel deployment is configured in `vercel.json`:
 
 ```bash
-vercel --prod
+npx vercel deploy --prod
 ```
 
-DNS records for the Vercel-purchased domain should point to GitHub Pages:
-
-- Apex `reviewmark.dev`: `A` records to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, and `185.199.111.153`, or `ALIAS` / `ANAME` to `jingbof.github.io` if Vercel DNS supports it.
-- `www.reviewmark.dev`: `CNAME` to `jingbof.github.io`.
-
-After DNS propagates, enable Enforce HTTPS in GitHub Pages settings.
+GitHub Pages deployment is also available in `.github/workflows/pages.yml` as a static hosting fallback.
 
 ## JetBrains / WebStorm Plugin
 
