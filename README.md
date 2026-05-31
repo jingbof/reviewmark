@@ -72,6 +72,8 @@ The site is a static Vite/React app. It reuses `@reviewmark/core` directly, so t
 
 GitHub Pages deployment is configured in `.github/workflows/pages.yml`. In GitHub repository settings, set Pages to deploy from GitHub Actions and configure the custom domain as `reviewmark.dev`.
 
+GitHub Pages for a private repository requires plan support. If GitHub reports that Pages is unavailable for this private repo, make the repo public, upgrade the GitHub plan, or deploy the same `apps/demo` build through Vercel.
+
 DNS records for the Vercel-purchased domain should point to GitHub Pages:
 
 - Apex `reviewmark.dev`: `A` records to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, and `185.199.111.153`, or `ALIAS` / `ANAME` to `jingbof.github.io` if Vercel DNS supports it.
