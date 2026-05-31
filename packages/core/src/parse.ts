@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import type {
   AttachedReview,
   MarkdownBlock,
@@ -385,7 +384,16 @@ function countReviewOpenings(markdown: string): number {
 }
 
 function stableCommentId(author: string, body: string, startLine: number): string {
-  return `rm_${createHash("sha1").update(`${author}\n${body}\n${startLine}`).digest("hex").slice(0, 8)}`;
+  return `rm_${fnv1a(`${author}\n${body}\n${startLine}`)}`;
+}
+
+function fnv1a(value: string): string {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
 }
 
 function lineNumberAt(text: string, offset: number): number {

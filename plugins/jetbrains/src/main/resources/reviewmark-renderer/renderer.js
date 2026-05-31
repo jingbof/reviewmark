@@ -6,7 +6,6 @@ var import_promises = require("node:fs/promises");
 var import_node_path = require("node:path");
 
 // packages/core/dist/parse.js
-var import_node_crypto = require("node:crypto");
 var REVIEW_COMMENT_RE = /<!--\s*reviewmark\b([\s\S]*?)-->/gi;
 var CANONICAL_BODY_SEPARATOR = "~~~";
 var LEGACY_BODY_SEPARATOR = "---";
@@ -335,9 +334,17 @@ function countReviewOpenings(markdown) {
   return markdown.match(/<!--\s*reviewmark\b/gi)?.length ?? 0;
 }
 function stableCommentId(author, body, startLine) {
-  return `rm_${(0, import_node_crypto.createHash)("sha1").update(`${author}
+  return `rm_${fnv1a(`${author}
 ${body}
-${startLine}`).digest("hex").slice(0, 8)}`;
+${startLine}`)}`;
+}
+function fnv1a(value) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
 }
 function lineNumberAt(text, offset) {
   let line = 1;

@@ -59,6 +59,26 @@ reviewmark preview spec.md
 
 `reviewmark preview` starts a local HTTP server, opens the generated review view in the default browser, watches the Markdown file, and refreshes the browser when the file changes.
 
+## Demo Site
+
+The live demo app lives in `apps/demo` and is designed for GitHub Pages at `reviewmark.dev`.
+
+```bash
+pnpm dev:site
+pnpm build:site
+```
+
+The site is a static Vite/React app. It reuses `@reviewmark/core` directly, so the browser playground exercises the same parser and HTML renderer as the CLI and JetBrains plugin.
+
+GitHub Pages deployment is configured in `.github/workflows/pages.yml`. In GitHub repository settings, set Pages to deploy from GitHub Actions and configure the custom domain as `reviewmark.dev`.
+
+DNS records for the Vercel-purchased domain should point to GitHub Pages:
+
+- Apex `reviewmark.dev`: `A` records to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, and `185.199.111.153`, or `ALIAS` / `ANAME` to `jingbof.github.io` if Vercel DNS supports it.
+- `www.reviewmark.dev`: `CNAME` to `jingbof.github.io`.
+
+After DNS propagates, enable Enforce HTTPS in GitHub Pages settings.
+
 ## JetBrains / WebStorm Plugin
 
 The JetBrains plugin lives under `plugins/jetbrains`.
