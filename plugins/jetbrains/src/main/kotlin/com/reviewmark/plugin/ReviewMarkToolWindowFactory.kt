@@ -5,7 +5,9 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 
 class ReviewMarkToolWindowFactory : ToolWindowFactory {
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) = Unit
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        ReviewMarkPreviewService.getInstance(project).syncWithSelectedEditor(toolWindow)
+    }
 
     override fun shouldBeAvailable(project: Project): Boolean = true
 }
