@@ -136,10 +136,17 @@ button {
 .nav-links a {
   display: inline-flex;
   align-items: center;
+  gap: 7px;
   padding: 0 12px;
   color: #c7d0dc;
   font-size: 14px;
   font-weight: 640;
+}
+
+.github-link svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
 }
 
 .nav-links button:hover,
@@ -259,7 +266,7 @@ button {
 .signal-line {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
   padding-top: 4px;
 }

@@ -164,8 +164,11 @@ function Header({ route, onNavigate }: { route: Route; onNavigate: (route: Route
       </button>
       <nav className="nav-links" aria-label="Primary">
         <NavButton label="Docs" route="/docs" current={route} onNavigate={onNavigate} />
-        <a href="https://github.com/jingbof/reviewmark" rel="noreferrer" target="_blank">
-          GitHub
+        <a className="github-link" href="https://github.com/jingbof/reviewmark" rel="noreferrer" target="_blank">
+          <svg aria-hidden="true" viewBox="0 0 16 16">
+            <path d="M8 .2a8 8 0 0 0-2.5 15.6c.4.1.5-.2.5-.4v-1.4c-2.1.5-2.6-.9-2.6-.9-.3-.8-.8-1-.8-1-.7-.5.1-.5.1-.5.7.1 1.1.8 1.1.8.7 1.1 1.8.8 2.2.6.1-.5.3-.8.5-1-1.7-.2-3.5-.9-3.5-3.9 0-.9.3-1.6.8-2.2-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.7 7.7 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.2 0 3-1.8 3.6-3.5 3.8.3.2.5.7.5 1.4v2.1c0 .2.1.5.5.4A8 8 0 0 0 8 .2Z" />
+          </svg>
+          <span>GitHub</span>
         </a>
         <button className="nav-cta" type="button" onClick={() => onNavigate("/playground")}>
           Try demo
@@ -211,6 +214,7 @@ function Playground({
   const detailItems = [
     "CommonMark-compatible",
     "CLI + WebStorm plugin",
+    "Agent skill included",
     "Review comments in Markdown",
     "Portable source, enhanced preview",
   ];
@@ -300,8 +304,8 @@ function Playground({
       <section className="feature-rail" aria-label="ReviewMark capabilities">
         <article>
           <span>01</span>
-          <h2>Agent safe</h2>
-          <p>Multiple reviewers can leave separate hidden blocks without rewriting the document.</p>
+          <h2>Agent skill</h2>
+          <p>Install the ReviewMark skill so coding agents can add and preserve structured Markdown review comments.</p>
         </article>
         <article>
           <span>02</span>
@@ -438,6 +442,7 @@ reviewmark preview spec.md`}</pre>
           The repo includes a ReviewMark skill so coding agents can preserve existing comments, add new comments near
           the block under review, and validate syntax before finishing.
         </p>
+        <pre>{`npx skills add jingbof/reviewmark --skill reviewmark`}</pre>
       </section>
     </ContentPage>
   );
