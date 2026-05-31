@@ -1,7 +1,7 @@
 import { marked } from "marked";
 
-export type ReviewMarkStatus = "open" | "resolved";
-export type ReviewMarkSeverity = "note" | "suggestion" | "issue" | "blocker";
+export type ReviewMarkStatus = "open" | "resolved" | "rejected";
+export type ReviewMarkSeverity = "note" | "low" | "medium" | "high" | "critical" | "suggestion" | "issue" | "blocker";
 
 export interface ReviewMarkTarget {
   blockIndex: number;
@@ -55,8 +55,17 @@ interface PendingComment {
 }
 
 const REVIEW_COMMENT_RE = /<!--\s*reviewmark\b([\s\S]*?)-->/gi;
-const STATUSES = new Set<ReviewMarkStatus>(["open", "resolved"]);
-const SEVERITIES = new Set<ReviewMarkSeverity>(["note", "suggestion", "issue", "blocker"]);
+const STATUSES = new Set<ReviewMarkStatus>(["open", "resolved", "rejected"]);
+const SEVERITIES = new Set<ReviewMarkSeverity>([
+  "note",
+  "low",
+  "medium",
+  "high",
+  "critical",
+  "suggestion",
+  "issue",
+  "blocker",
+]);
 
 export function parseReviewMark(markdown: string): ReviewMarkDocument {
   const warnings: ReviewMarkWarning[] = [];
@@ -225,7 +234,7 @@ function parseCommentInner(
   return {
     comment: {
       id: meta.id ?? `rm-${index}`,
-      author: meta.author,
+      author: meta.reviewer ?? meta.author,
       status: status ?? "open",
       severity: severity ?? "note",
       created: meta.created,
@@ -625,19 +634,24 @@ body {
   padding: 12px 14px;
 }
 
-.reviewmark-comment.issue {
+.reviewmark-comment.issue,
+.reviewmark-comment.medium,
+.reviewmark-comment.high {
   border-left-color: var(--rm-issue);
 }
 
-.reviewmark-comment.blocker {
+.reviewmark-comment.blocker,
+.reviewmark-comment.critical {
   border-left-color: var(--rm-blocker);
 }
 
-.reviewmark-comment.suggestion {
+.reviewmark-comment.suggestion,
+.reviewmark-comment.low {
   border-left-color: var(--rm-accent);
 }
 
-.reviewmark-comment.resolved {
+.reviewmark-comment.resolved,
+.reviewmark-comment.rejected {
   opacity: 0.66;
 }
 

@@ -44,4 +44,22 @@ describe("parseReviewMark", () => {
     assert.equal(html.includes("This needs an example"), true);
     assert.equal(html.includes("<title>Spec</title>"), true);
   });
+
+  it("accepts the skill metadata vocabulary", () => {
+    const doc = parseReviewMark(`Reviewed paragraph.
+
+<!-- reviewmark
+id: rm-skill
+reviewer: codex
+status: rejected
+severity: critical
+---
+This uses the metadata vocabulary taught by the ReviewMark skill.
+-->`);
+
+    assert.equal(doc.warnings.length, 0);
+    assert.equal(doc.comments[0].author, "codex");
+    assert.equal(doc.comments[0].status, "rejected");
+    assert.equal(doc.comments[0].severity, "critical");
+  });
 });

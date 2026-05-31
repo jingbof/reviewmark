@@ -2,7 +2,19 @@
 
 ReviewMark is a v0 CLI for keeping review comments inside Markdown without showing those comments in the clean document. Comments live in hidden HTML comment blocks and attach to the nearest previous non-review top-level Markdown block.
 
-## Install locally
+## Install CLI
+
+```bash
+npm install -g reviewmark
+```
+
+Or run without a global install:
+
+```bash
+npx reviewmark preview spec.md
+```
+
+## Develop locally
 
 ```bash
 pnpm install
@@ -23,8 +35,8 @@ The paragraph being reviewed.
 
 <!-- reviewmark
 id: rm-1
-author: Ada
-severity: issue
+reviewer: Ada
+severity: medium
 status: open
 ---
 This needs a concrete example.
@@ -35,13 +47,17 @@ Supported statuses:
 
 - `open`
 - `resolved`
+- `rejected`
 
 Supported severities:
 
 - `note`
-- `suggestion`
-- `issue`
-- `blocker`
+- `low`
+- `medium`
+- `high`
+- `critical`
+
+Legacy files may also contain `author`, `suggestion`, `issue`, or `blocker`; the CLI accepts those for compatibility.
 
 Metadata is optional. If `id` is missing, ReviewMark generates `rm-1`, `rm-2`, and so on. Plain review blocks also work:
 
@@ -71,6 +87,20 @@ ReviewMark preview running:
 http://127.0.0.1:4317/spec-md
 
 Watching spec.md...
+```
+
+## Install Agent Skill
+
+This repo includes a ReviewMark agent skill at `skills/reviewmark` so Codex, Claude Code, OpenCode, Cursor, and similar agents can learn the comment format.
+
+```bash
+npx skills add jingbof/reviewmark --skill reviewmark
+```
+
+After installing it, ask your agent:
+
+```text
+Review this Markdown file using ReviewMark.
 ```
 
 ## Using ReviewMark in WebStorm
