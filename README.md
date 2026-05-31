@@ -4,6 +4,10 @@ ReviewMark is a CommonMark-compatible review-comment extension for Markdown.
 
 It lets humans and AI agents add structured review comments using hidden HTML comment blocks. Normal Markdown renderers hide these comments, while ReviewMark-aware tools render them as side comments.
 
+![ReviewMark demo showing Markdown source beside rendered review comments](docs/assets/reviewmark-demo.webp)
+
+Live demo: <https://reviewmark.dev>
+
 ## Syntax
 
 ```markdown
