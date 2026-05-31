@@ -5,7 +5,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { existsSync, watchFile, unwatchFile } from "node:fs";
 import { basename, extname, resolve } from "node:path";
 import { spawn } from "node:child_process";
-import { parseReviewMark, renderReviewMarkHtml, stripReviewMark, type ReviewMarkDocument } from "@reviewmark/core";
+import { parseReviewMark, renderReviewMarkHtml, stripReviewMarks, type ReviewMarkDocument } from "@reviewmark/core";
 
 interface ParsedArgs {
   command: string;
@@ -61,43 +61,59 @@ async function listCommand(args: ParsedArgs): Promise<void> {
 
   const rows = doc.comments.map((comment) => ({
     id: comment.id,
-    status: comment.status,
-    severity: comment.severity,
-    line: String(comment.source.startLine),
-    target: comment.target?.excerpt ?? "No target block",
+    author: comment.metadata.author,
+    type: comment.metadata.type,
+    status: comment.metadata.status,
+    line: String(comment.startLine ?? ""),
+    target:
+      comment.attachedToBlockIndex !== undefined
+        ? (doc.blocks[comment.attachedToBlockIndex]?.text ?? "No target block")
+        : "No target block",
   }));
 
-  printTable(rows, ["id", "status", "severity", "line", "target"]);
+  printTable(rows, ["id", "author", "type", "status", "line", "target"]);
 }
 
 async function validateCommand(args: ParsedArgs): Promise<void> {
   const file = requiredFile(args);
   const doc = await readDocument(file);
 
-  if (doc.warnings.length === 0) {
+  if (doc.diagnostics.length === 0) {
     process.stdout.write(`ReviewMark validation passed: ${doc.comments.length} comment${doc.comments.length === 1 ? "" : "s"} found.\n`);
     return;
   }
 
-  for (const warning of doc.warnings) {
-    process.stderr.write(`Line ${warning.line}: ${warning.message}\n`);
+  for (const diagnostic of doc.diagnostics) {
+    const prefix = diagnostic.line ? `Line ${diagnostic.line}: ` : "";
+    process.stderr.write(`${diagnostic.level.toUpperCase()} ${diagnostic.code}: ${prefix}${diagnostic.message}\n`);
   }
   process.exitCode = 1;
 }
 
 async function renderCommand(args: ParsedArgs): Promise<void> {
   const file = requiredFile(args);
-  const out = readStringFlag(args, "out") ?? defaultRenderOut(file);
+  const out = readStringFlag(args, "out");
+  const stdout = args.flags.get("stdout") === true;
 
-  await writeRenderedHtml(file, out, args.flags.get("live") === true);
-  process.stdout.write(`Rendered ${file} -> ${out}\n`);
+  if (out && stdout) {
+    throw new CliError("render --stdout and --out are mutually exclusive.");
+  }
+
+  if (stdout) {
+    process.stdout.write(await renderPreviewHtml(file));
+    return;
+  }
+
+  const outputPath = out ?? defaultRenderOut(file);
+  await writeRenderedHtml(file, outputPath, args.flags.get("live") === true);
+  process.stdout.write(`Rendered ${file} -> ${outputPath}\n`);
 
   if (args.flags.get("watch")) {
     process.stdout.write(`Watching ${file}...\n`);
     watchFile(file, { interval: 250 }, async () => {
       try {
-        await writeRenderedHtml(file, out, args.flags.get("live") === true);
-        process.stdout.write(`Rendered ${file} -> ${out}\n`);
+        await writeRenderedHtml(file, outputPath, args.flags.get("live") === true);
+        process.stdout.write(`Rendered ${file} -> ${outputPath}\n`);
       } catch (error) {
         process.stderr.write(`${formatError(error)}\n`);
       }
@@ -109,7 +125,7 @@ async function stripCommand(args: ParsedArgs): Promise<void> {
   const file = requiredFile(args);
   const out = readStringFlag(args, "out");
   const markdown = await readFile(file, "utf8");
-  const stripped = stripReviewMark(markdown);
+  const stripped = stripReviewMarks(markdown);
 
   if (out) {
     await writeFile(out, stripped, "utf8");
@@ -325,7 +341,7 @@ function printHelp(): void {
 Usage:
   reviewmark list <file> [--json]
   reviewmark validate <file>
-  reviewmark render <file> [--out file.html] [--watch] [--live]
+  reviewmark render <file> [--stdout | --out file.html] [--watch] [--live]
   reviewmark strip <file> [--out clean.md]
   reviewmark preview <file> [--port 4317] [--host 127.0.0.1] [--no-open]
 
@@ -334,7 +350,7 @@ Review comments are hidden HTML comments:
   <!-- reviewmark
   id: rm-1
   author: Ada
-  severity: issue
+  type: issue
   status: open
   ---
   Comment body in Markdown.

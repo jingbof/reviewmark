@@ -18,9 +18,9 @@ Use this hidden single-block format:
 ```md
 <!-- reviewmark
 id: rm-1
-reviewer: codex
+author: Codex
 status: open
-severity: medium
+type: issue
 ---
 Comment body in Markdown.
 -->
@@ -33,11 +33,11 @@ Do not use a separate `<!-- /reviewmark -->` closing marker. The comment body mu
 Use these fields:
 
 - `id`: stable comment id, such as `rm-pricing-1`; if omitted, the CLI generates one.
-- `reviewer`: reviewer or agent name, such as `codex`, `claude`, `opencode`, `cursor`, or `human`.
+- `author`: reviewer or agent name, such as `Codex`, `Claude`, `OpenCode`, `Cursor`, or `Human`.
+- `type`: `note`, `issue`, `suggestion`, `question`, or `praise`.
 - `status`: `open`, `resolved`, or `rejected`.
-- `severity`: `note`, `low`, `medium`, `high`, or `critical`.
 
-Legacy files may use `author` instead of `reviewer`, or `suggestion`, `issue`, and `blocker` severities. Preserve those values when editing existing comments unless the user asks you to normalize them.
+Legacy files may use `reviewer` instead of `author`, or `severity` instead of `type`. Prefer the canonical `author` and `type` fields for new comments, and preserve legacy fields when editing existing comments unless the user asks you to normalize them.
 
 ## Reviewing
 
@@ -49,7 +49,7 @@ When asked to review a Markdown document:
 4. Preserve existing ReviewMark comments from other reviewers.
 5. Add your comments as separate ReviewMark blocks.
 6. Keep comments concise, actionable, and specific.
-7. Use severity honestly. Most comments should be `note`, `low`, or `medium`; use `high` or `critical` only for major correctness, security, legal, financial, architectural, or product risks.
+7. Use type honestly. Most comments should be `note`, `suggestion`, or `question`; use `issue` for correctness, security, legal, financial, architectural, or product risks, and use `praise` only for positive feedback worth preserving.
 8. Validate before finishing when the CLI is available: `npx reviewmark validate <file>` or `pnpm reviewmark validate <file>` inside this repo.
 
 ## Resolving
@@ -59,9 +59,9 @@ When asked to resolve a comment, update only that comment's `status` and body if
 ```md
 <!-- reviewmark
 id: rm-pricing-1
-reviewer: codex
+author: Codex
 status: resolved
-severity: medium
+type: issue
 ---
 Resolved by adding a lower starter tier.
 -->

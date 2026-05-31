@@ -5,14 +5,16 @@
   "description": "ReviewMark TypeScript workspace",
   "type": "module",
   "scripts": {
-    "build": "pnpm --filter @reviewmark/core build && pnpm --filter reviewmark build",
+    "build": "pnpm --filter @reviewmark/core build && pnpm --filter reviewmark build && pnpm build:jetbrains-renderer",
+    "build:jetbrains-renderer": "esbuild packages/reviewmark/src/renderer.ts --bundle --platform=node --format=esm --outfile=plugins/jetbrains/src/main/resources/reviewmark-renderer/renderer.js",
     "check": "pnpm --filter @reviewmark/core check && pnpm --filter reviewmark check",
-    "test": "pnpm --filter @reviewmark/core test",
+    "test": "pnpm build && pnpm --filter @reviewmark/core test && pnpm --filter reviewmark test",
     "dev": "tsx packages/reviewmark/src/cli.ts",
     "reviewmark": "node packages/reviewmark/dist/cli.js"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "esbuild": "^0.28.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   },

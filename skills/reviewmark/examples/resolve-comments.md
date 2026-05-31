@@ -5,9 +5,9 @@
 ```md
 <!-- reviewmark
 id: rm-pricing-1
-reviewer: claude
+author: Claude
 status: open
-severity: medium
+type: issue
 ---
 This may be too expensive for SMB users.
 -->
@@ -18,9 +18,9 @@ This may be too expensive for SMB users.
 ```md
 <!-- reviewmark
 id: rm-pricing-1
-reviewer: claude
+author: Claude
 status: resolved
-severity: medium
+type: issue
 ---
 Resolved by adding a lower starter tier.
 -->

@@ -7,18 +7,18 @@ We should charge $99/mo.
 
 <!-- reviewmark
 id: rm-claude-pricing
-reviewer: claude
+author: Claude
 status: open
-severity: medium
+type: issue
 ---
 This may be too expensive for SMB users.
 -->
 
 <!-- reviewmark
 id: rm-codex-pricing
-reviewer: codex
+author: Codex
 status: open
-severity: low
+type: suggestion
 ---
 Consider mentioning annual discounts.
 -->

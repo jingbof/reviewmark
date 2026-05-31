@@ -1,0 +1,51 @@
+<idea-plugin>
+  <id>com.reviewmark.plugin</id>
+  <name>ReviewMark</name>
+  <vendor>ReviewMark</vendor>
+
+  <description>
+    ReviewMark is a CommonMark-compatible review-comment extension for Markdown.
+    It renders hidden ReviewMark comments as side comments inside JetBrains IDEs.
+  </description>
+
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <postStartupActivity implementation="com.reviewmark.plugin.ReviewMarkStartupActivity"/>
+    <applicationService serviceImplementation="com.reviewmark.plugin.ReviewMarkSettings"/>
+    <projectService serviceImplementation="com.reviewmark.plugin.ReviewMarkPreviewService"/>
+    <applicationConfigurable
+      instance="com.reviewmark.plugin.ReviewMarkSettingsConfigurable"
+      displayName="ReviewMark"/>
+    <toolWindow
+      id="ReviewMark Preview"
+      anchor="right"
+      factoryClass="com.reviewmark.plugin.ReviewMarkToolWindowFactory"
+      canCloseContents="true"/>
+  </extensions>
+
+  <actions>
+    <action
+      id="ReviewMark.OpenPreview"
+      class="com.reviewmark.plugin.ReviewMarkOpenPreviewAction"
+      text="ReviewMark: Open Preview"
+      description="Open ReviewMark preview for the current Markdown file">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </action>
+    <action
+      id="ReviewMark.InsertComment"
+      class="com.reviewmark.plugin.ReviewMarkInsertCommentAction"
+      text="ReviewMark: Insert Comment"
+      description="Insert a ReviewMark comment below the selected Markdown block">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+    <action
+      id="ReviewMark.ToggleCommentStatus"
+      class="com.reviewmark.plugin.ReviewMarkToggleCommentStatusAction"
+      text="ReviewMark: Resolve/Reopen Comment"
+      description="Toggle the nearest ReviewMark comment between open and resolved">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+</idea-plugin>

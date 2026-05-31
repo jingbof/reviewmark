@@ -1,6 +1,35 @@
 # ReviewMark
 
-ReviewMark is a v0 CLI for keeping review comments inside Markdown without showing those comments in the clean document. Comments live in hidden HTML comment blocks and attach to the nearest previous non-review top-level Markdown block.
+ReviewMark is a CommonMark-compatible review-comment extension for Markdown.
+
+It lets humans and AI agents add structured review comments using hidden HTML comment blocks. Normal Markdown renderers hide these comments, while ReviewMark-aware tools render them as side comments.
+
+## Syntax
+
+```markdown
+Paragraph being reviewed.
+
+<!-- reviewmark
+id: rm-example
+author: Claude
+type: issue
+status: open
+---
+This is the review comment.
+-->
+```
+
+A ReviewMark comment applies to the nearest previous non-review Markdown block. Supported block targets include headings, paragraphs, lists, blockquotes, code blocks, tables, and thematic breaks.
+
+Supported metadata:
+
+- `id`: optional stable id. Missing ids are generated as `rm_<8-char-sha1>` from author, body, and start line.
+- `author`: reviewer name. Defaults to `unknown`.
+- `type`: `note`, `issue`, `suggestion`, `question`, or `praise`. Defaults to `note`.
+- `status`: `open`, `resolved`, or `rejected`. Defaults to `open`.
+- `created_at`: optional timestamp.
+
+Legacy `severity` values are accepted for compatibility and normalized internally to `type`.
 
 ## Install CLI
 
@@ -14,64 +43,12 @@ Or run without a global install:
 npx reviewmark preview spec.md
 ```
 
-## Develop locally
-
-```bash
-pnpm install
-pnpm build
-pnpm reviewmark help
-```
-
-During development you can run the CLI from TypeScript:
-
-```bash
-pnpm dev -- preview examples/spec.md
-```
-
-## Syntax
-
-```markdown
-The paragraph being reviewed.
-
-<!-- reviewmark
-id: rm-1
-reviewer: Ada
-severity: medium
-status: open
----
-This needs a concrete example.
--->
-```
-
-Supported statuses:
-
-- `open`
-- `resolved`
-- `rejected`
-
-Supported severities:
-
-- `note`
-- `low`
-- `medium`
-- `high`
-- `critical`
-
-Legacy files may also contain `author`, `suggestion`, `issue`, or `blocker`; the CLI accepts those for compatibility.
-
-Metadata is optional. If `id` is missing, ReviewMark generates `rm-1`, `rm-2`, and so on. Plain review blocks also work:
-
-```markdown
-<!-- reviewmark
-Quick note without metadata.
--->
-```
-
 ## CLI
 
 ```bash
 reviewmark list spec.md
 reviewmark validate spec.md
+reviewmark render spec.md --stdout
 reviewmark render spec.md --out spec.review.html
 reviewmark render spec.md --watch --out spec.review.html
 reviewmark strip spec.md --out spec.clean.md
@@ -80,14 +57,44 @@ reviewmark preview spec.md
 
 `reviewmark preview` starts a local HTTP server, opens the generated review view in the default browser, watches the Markdown file, and refreshes the browser when the file changes.
 
-Example output:
+## JetBrains / WebStorm Plugin
+
+The JetBrains plugin lives under `plugins/jetbrains`.
+
+The plugin does not replace WebStorm's built-in Markdown preview. Instead, it provides a ReviewMark-aware preview tool window that automatically opens when a Markdown file contains `<!-- reviewmark`.
+
+Usage:
+
+1. Install the ReviewMark JetBrains plugin.
+2. Open a Markdown file containing `<!-- reviewmark`.
+3. ReviewMark Preview opens automatically beside the editor.
+4. Save the file to refresh the preview.
+
+Manual preview:
 
 ```text
-ReviewMark preview running:
-http://127.0.0.1:4317/spec-md
-
-Watching spec.md...
+ReviewMark: Open Preview
 ```
+
+The manual action is available from Search Everywhere, Tools, and the editor context menu.
+
+v0.4 editor actions:
+
+- `ReviewMark: Insert Comment`: inserts a ReviewMark comment below the selected block or current line.
+- `ReviewMark: Resolve/Reopen Comment`: toggles the nearest ReviewMark comment between `open` and `resolved`.
+
+Settings:
+
+- Auto-open ReviewMark Preview.
+- External CLI fallback path.
+
+Limitations:
+
+- The built-in WebStorm Markdown preview is not modified.
+- v0.4 supports top-level ReviewMark comments only.
+- Refresh happens on save, not every keystroke.
+- Editing/resolving from inside the preview itself is not supported yet; use editor actions.
+- The bundled renderer runs with Node.js in this version. If bundled rendering fails, the plugin can fall back to the configured external CLI path.
 
 ## Install Agent Skill
 
@@ -103,40 +110,42 @@ After installing it, ask your agent:
 Review this Markdown file using ReviewMark.
 ```
 
-## Using ReviewMark in WebStorm
-
-Use the external preview workflow for v0:
+## Develop Locally
 
 ```bash
-reviewmark preview spec.md
+pnpm install
+pnpm build
+pnpm test
+pnpm reviewmark help
 ```
 
-Then edit `spec.md` in WebStorm and keep the browser preview open beside it. You can also configure a WebStorm file watcher or external tool to run:
+During development you can run the CLI from TypeScript:
 
 ```bash
-reviewmark render spec.md --out spec.review.html
+pnpm dev -- preview examples/spec.md
 ```
 
-## Using ReviewMark in VS Code
-
-Use the same external preview workflow for v0:
+Build the JetBrains bundled renderer:
 
 ```bash
-reviewmark preview spec.md
+pnpm build:jetbrains-renderer
 ```
 
-Edit the Markdown file in VS Code and keep the browser preview open. The preview refreshes when the Markdown file changes.
+Build or run the JetBrains plugin from `plugins/jetbrains` with Gradle:
 
-## Future native VS Code extension
+```bash
+./gradlew buildPlugin
+./gradlew runIde
+```
 
-The core package exports:
+If your checkout does not have a Gradle wrapper yet, use a local Gradle installation to generate one or run the same tasks.
 
-- `parseReviewMark(markdown)`
-- `stripReviewMark(markdown)`
-- `renderReviewMarkHtml(markdownOrDocument)`
+## Manual Plugin Test Cases
 
-A future VS Code extension can call those functions, open a webview beside the current editor, refresh on save, and jump from a comment to the target source block.
-
-## Future JetBrains/WebStorm plugin
-
-The v0 recommendation is still the CLI preview. A future JetBrains plugin can call the `reviewmark` CLI or import the core parser through a Node subprocess and show comments in a tool window.
+1. Open `examples/pricing.md`; expected: ReviewMark Preview auto-opens.
+2. Open `examples/no-reviewmark.md`; expected: no preview auto-opens.
+3. Edit `examples/pricing.md` and save; expected: preview refreshes.
+4. Close preview and run `ReviewMark: Open Preview`; expected: preview opens again.
+5. Break metadata; expected: preview shows diagnostics but does not crash.
+6. Disable auto-open in settings; expected: preview does not auto-open.
+7. Run manual action with auto-open disabled; expected: preview opens.
