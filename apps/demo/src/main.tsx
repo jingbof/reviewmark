@@ -224,8 +224,14 @@ function Playground({
           </p>
         </div>
         <div className="install-card" aria-label="CLI install">
-          <span>npm</span>
-          <code>npx reviewmarks preview review.md</code>
+          <div>
+            <span>Run once</span>
+            <code>npx reviewmarks preview review.md</code>
+          </div>
+          <div>
+            <span>Install globally</span>
+            <code>npm install -g reviewmarks</code>
+          </div>
         </div>
         <div className="signal-line" aria-label="Technical details">
           {detailItems.map((item) => (
