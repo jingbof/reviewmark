@@ -352,7 +352,7 @@ Review comments are hidden HTML comments:
   author: Ada
   type: issue
   status: open
-  ---
+  ~~~
   Comment body in Markdown.
   -->
 `);

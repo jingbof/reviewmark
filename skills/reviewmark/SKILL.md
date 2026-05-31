@@ -21,12 +21,14 @@ id: rm-1
 author: Codex
 status: open
 type: issue
----
+~~~
 Comment body in Markdown.
 -->
 ```
 
 Do not use a separate `<!-- /reviewmark -->` closing marker. The comment body must stay inside the hidden HTML comment block so normal Markdown previews do not display it.
+
+Use `~~~` as the separator between metadata and body. Do not use `---` for new comments; `---` contains `--`, which is unsafe inside HTML comments and can break built-in Markdown previews.
 
 ## Metadata
 
@@ -62,7 +64,7 @@ id: rm-pricing-1
 author: Codex
 status: resolved
 type: issue
----
+~~~
 Resolved by adding a lower starter tier.
 -->
 ```

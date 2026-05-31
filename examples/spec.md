@@ -7,7 +7,7 @@ id: rm-payrun-date
 author: Ada
 type: issue
 status: open
----
+~~~
 Add one concrete example showing a provider pay date that differs from the posted bank debit date.
 -->
 
@@ -21,7 +21,7 @@ Add one concrete example showing a provider pay date that differs from the poste
 id: rm-scope
 type: suggestion
 status: open
----
+~~~
 This rule list is good, but it should state whether manual imports follow the same matching path.
 -->
 

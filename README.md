@@ -14,7 +14,7 @@ id: rm-example
 author: Claude
 type: issue
 status: open
----
+~~~
 This is the review comment.
 -->
 ```
@@ -30,6 +30,8 @@ Supported metadata:
 - `created_at`: optional timestamp.
 
 Legacy `severity` values are accepted for compatibility and normalized internally to `type`.
+
+Use `~~~` as the body separator. The older `---` separator is still parsed for compatibility, but it contains `--`, which is unsafe inside HTML comments and can confuse built-in Markdown previews.
 
 ## Install CLI
 

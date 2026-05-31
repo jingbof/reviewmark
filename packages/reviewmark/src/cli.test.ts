@@ -17,7 +17,7 @@ id: rm-cli
 author: Codex
 type: issue
 status: open
----
+~~~
 CLI test comment.
 -->`;
 
@@ -79,7 +79,7 @@ describe("reviewmark CLI", () => {
 <!-- reviewmark
 type: risk
 status: waiting
----
+~~~
 Invalid.
 -->`,
         "utf8",

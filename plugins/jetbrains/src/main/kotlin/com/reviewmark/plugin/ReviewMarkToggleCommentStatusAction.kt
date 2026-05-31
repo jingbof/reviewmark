@@ -34,7 +34,7 @@ class ReviewMarkToggleCommentStatusAction : AnAction() {
         val updatedBlock = if (Regex("""(?m)^status:\s*(open|resolved|rejected)\s*$""").containsMatchIn(block)) {
             block.replace(Regex("""(?m)^status:\s*(open|resolved|rejected)\s*$"""), "status: $nextStatus")
         } else {
-            block.replaceFirst("---", "status: $nextStatus\n---")
+            block.replaceFirst(Regex("""(?m)^(~~~|---)\s*$"""), "status: $nextStatus\n$1")
         }
 
         WriteCommandAction.runWriteCommandAction(project, "Toggle ReviewMark Comment Status", null, Runnable {

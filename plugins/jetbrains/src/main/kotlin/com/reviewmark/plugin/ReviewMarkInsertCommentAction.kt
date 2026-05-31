@@ -49,7 +49,7 @@ id: $id
 author: Human
 type: note
 status: open
----
+~~~
 $body
 -->
         """.trimEnd()

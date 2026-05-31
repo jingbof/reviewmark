@@ -17,7 +17,7 @@ id: rm-date
 author: Ada
 type: issue
 status: open
----
+~~~
 This needs an example that covers bank-posted timing.
 -->
 
@@ -41,7 +41,7 @@ describe("parseReviewMark", () => {
     const doc = parseReviewMark(`Paragraph.
 
 <!-- reviewmark
----
+~~~
 Comment body.
 -->`);
 
@@ -55,7 +55,7 @@ Comment body.
 
 <!-- reviewmark
 author: Codex
----
+~~~
 Generated id comment.
 -->`;
     const first = parseReviewMark(markdown).comments[0].id;
@@ -70,12 +70,25 @@ Generated id comment.
 
 <!-- reviewmark
 severity: suggestion
----
+~~~
 Legacy comment.
 -->`);
 
     assert.equal(doc.comments[0].metadata.type, "suggestion");
     assert.equal(doc.diagnostics.length, 0);
+  });
+
+  it("parses legacy body separators and warns about Markdown preview compatibility", () => {
+    const doc = parseReviewMark(`Paragraph.
+
+<!-- reviewmark
+id: rm-legacy
+---
+Legacy separator comment.
+-->`);
+
+    assert.equal(doc.comments[0].body, "Legacy separator comment.");
+    assert.equal(doc.diagnostics[0].code, "legacy_separator");
   });
 
   it("attaches a comment to the nearest previous block", () => {
@@ -90,13 +103,13 @@ Legacy comment.
 
 <!-- reviewmark
 id: rm-one
----
+~~~
 First comment.
 -->
 
 <!-- reviewmark
 id: rm-two
----
+~~~
 Second comment.
 -->`);
 
@@ -110,7 +123,7 @@ Second comment.
   it("reports orphan comments before any Markdown block", () => {
     const doc = parseReviewMark(`<!-- reviewmark
 id: rm-orphan
----
+~~~
 No target.
 -->
 
@@ -126,7 +139,7 @@ Paragraph.`);
 <!-- reviewmark
 status: pending
 type: risk
----
+~~~
 Invalid metadata.
 -->`);
 

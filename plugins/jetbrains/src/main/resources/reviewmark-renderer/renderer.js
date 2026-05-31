@@ -8,6 +8,9 @@ var import_node_path = require("node:path");
 // packages/core/dist/parse.js
 var import_node_crypto = require("node:crypto");
 var REVIEW_COMMENT_RE = /<!--\s*reviewmark\b([\s\S]*?)-->/gi;
+var CANONICAL_BODY_SEPARATOR = "~~~";
+var LEGACY_BODY_SEPARATOR = "---";
+var BODY_SEPARATORS = /* @__PURE__ */ new Set([CANONICAL_BODY_SEPARATOR, LEGACY_BODY_SEPARATOR]);
 var STATUSES = /* @__PURE__ */ new Set(["open", "resolved", "rejected"]);
 var TYPES = /* @__PURE__ */ new Set(["note", "issue", "suggestion", "question", "praise"]);
 var SEVERITY_TO_TYPE = {
@@ -90,7 +93,7 @@ function parseCommentInner(inner, raw, startLine, endLine) {
   const diagnostics = [];
   const normalized = inner.replace(/^\s*\n/, "").replace(/\s+$/, "");
   const lines = normalized.split(/\r?\n/);
-  const dividerIndex = lines.findIndex((line) => line.trim() === "---");
+  const dividerIndex = lines.findIndex((line) => BODY_SEPARATORS.has(line.trim()));
   const metaLines = dividerIndex >= 0 ? lines.slice(0, dividerIndex) : collectLeadingMetaLines(lines);
   const bodyLines = dividerIndex >= 0 ? lines.slice(dividerIndex + 1) : lines.slice(metaLines.length);
   const meta = parseMeta(metaLines);
@@ -103,7 +106,15 @@ function parseCommentInner(inner, raw, startLine, endLine) {
     diagnostics.push({
       level: "warning",
       code: "missing_separator",
-      message: `ReviewMark comment "${id}" has metadata but no "---" body separator.`,
+      message: `ReviewMark comment "${id}" has metadata but no "${CANONICAL_BODY_SEPARATOR}" body separator.`,
+      line: startLine
+    });
+  }
+  if (lines[dividerIndex]?.trim() === LEGACY_BODY_SEPARATOR) {
+    diagnostics.push({
+      level: "warning",
+      code: "legacy_separator",
+      message: `ReviewMark comment "${id}" uses legacy "${LEGACY_BODY_SEPARATOR}" separator. Use "${CANONICAL_BODY_SEPARATOR}" so built-in Markdown previews keep the HTML comment hidden safely.`,
       line: startLine
     });
   }

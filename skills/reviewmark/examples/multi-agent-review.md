@@ -10,7 +10,7 @@ id: rm-claude-pricing
 author: Claude
 status: open
 type: issue
----
+~~~
 This may be too expensive for SMB users.
 -->
 
@@ -19,7 +19,7 @@ id: rm-codex-pricing
 author: Codex
 status: open
 type: suggestion
----
+~~~
 Consider mentioning annual discounts.
 -->
 ```
