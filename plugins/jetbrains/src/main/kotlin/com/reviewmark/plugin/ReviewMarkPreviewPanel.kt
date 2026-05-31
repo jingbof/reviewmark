@@ -58,9 +58,48 @@ class ReviewMarkPreviewPanel(
         return """
             <!doctype html>
             <html>
-            <body style="font-family: system-ui, sans-serif; padding: 24px;">
+            <head>
+              <style>
+                :root {
+                  color-scheme: light dark;
+                  --bg: #fffdfa;
+                  --text: #20211d;
+                  --muted: #5f655f;
+                  --panel: #f4f2ea;
+                  --border: #dfddd4;
+                }
+                @media (prefers-color-scheme: dark) {
+                  :root {
+                    --bg: #151718;
+                    --text: #e8eceb;
+                    --muted: #a5aaa7;
+                    --panel: #242829;
+                    --border: #343a3b;
+                  }
+                }
+                body {
+                  margin: 0;
+                  font-family: system-ui, sans-serif;
+                  padding: 24px;
+                  background: var(--bg);
+                  color: var(--text);
+                }
+                h2 { margin-top: 0; color: var(--text); }
+                pre {
+                  white-space: pre-wrap;
+                  overflow: auto;
+                  padding: 16px;
+                  border: 1px solid var(--border);
+                  border-radius: 8px;
+                  background: var(--panel);
+                  color: var(--text);
+                }
+                p { color: var(--muted); }
+              </style>
+            </head>
+            <body>
               <h2>ReviewMark render failed</h2>
-              <pre style="white-space: pre-wrap;">$escaped</pre>
+              <pre>$escaped</pre>
             </body>
             </html>
         """.trimIndent()

@@ -122,7 +122,7 @@ function escapeHtml(value: string): string {
 
 const REVIEWMARK_CSS = `
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --rm-bg: #f7f7f4;
   --rm-paper: #fffdfa;
   --rm-ink: #20211d;
@@ -136,6 +136,22 @@ const REVIEWMARK_CSS = `
   --rm-note: #53606f;
   --rm-shadow: 0 18px 50px rgba(42, 41, 34, 0.08);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rm-bg: #151718;
+    --rm-paper: #1d2021;
+    --rm-ink: #e8eceb;
+    --rm-muted: #a5aaa7;
+    --rm-border: #343a3b;
+    --rm-accent: #7dc9c4;
+    --rm-accent-soft: #1f3536;
+    --rm-issue: #f0a06f;
+    --rm-critical: #ff7b96;
+    --rm-praise: #91d18b;
+    --rm-note: #96a3b4;
+    --rm-shadow: none;
+  }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--rm-bg); color: var(--rm-ink); }
@@ -151,6 +167,9 @@ body { margin: 0; background: var(--rm-bg); color: var(--rm-ink); }
 .reviewmark-block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 16px 18px; border: 1px solid transparent; border-radius: 8px; }
 .reviewmark-block + .reviewmark-block { margin-top: 8px; }
 .reviewmark-block.has-comments { border-color: #c8dad6; background: #fbfffe; }
+@media (prefers-color-scheme: dark) {
+  .reviewmark-block.has-comments { border-color: #345457; background: #182425; }
+}
 .reviewmark-block-content > :first-child, .reviewmark-comment-body > :first-child { margin-top: 0; }
 .reviewmark-block-content > :last-child, .reviewmark-comment-body > :last-child { margin-bottom: 0; }
 .reviewmark-block-content { min-width: 0; font-size: 16px; line-height: 1.68; }
@@ -161,6 +180,11 @@ body { margin: 0; background: var(--rm-bg); color: var(--rm-ink); }
 .reviewmark-block-content pre { overflow: auto; background: #20211d; color: #f8f6ee; border-radius: 8px; padding: 16px; }
 .reviewmark-inline-comments { display: grid; gap: 10px; }
 .reviewmark-comment { border-left: 4px solid var(--rm-note); background: #f5f6f3; border-radius: 6px; padding: 12px 14px; }
+@media (prefers-color-scheme: dark) {
+  .reviewmark-block-content code { background: #2a2f31; }
+  .reviewmark-block-content pre { background: #111314; color: #e8eceb; }
+  .reviewmark-comment { background: #242829; }
+}
 .reviewmark-comment.issue { border-left-color: var(--rm-issue); }
 .reviewmark-comment.suggestion { border-left-color: var(--rm-accent); }
 .reviewmark-comment.question { border-left-color: #7561a8; }

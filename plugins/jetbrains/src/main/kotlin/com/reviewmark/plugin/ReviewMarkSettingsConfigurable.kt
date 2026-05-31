@@ -11,6 +11,7 @@ import javax.swing.JPanel
 
 class ReviewMarkSettingsConfigurable : Configurable {
     private val autoOpen = JBCheckBox("Auto-open ReviewMark Preview")
+    private val nodeExecutablePath = JBTextField()
     private val externalCliPath = JBTextField()
     private var panel: JPanel? = null
 
@@ -32,6 +33,15 @@ class ReviewMarkSettingsConfigurable : Configurable {
             constraints.gridy = 1
             constraints.gridwidth = 1
             constraints.weightx = 0.0
+            add(JBLabel("Node executable path:"), constraints)
+
+            constraints.gridx = 1
+            constraints.weightx = 1.0
+            add(nodeExecutablePath, constraints)
+
+            constraints.gridx = 0
+            constraints.gridy = 2
+            constraints.weightx = 0.0
             add(JBLabel("External CLI fallback path:"), constraints)
 
             constraints.gridx = 1
@@ -45,18 +55,22 @@ class ReviewMarkSettingsConfigurable : Configurable {
 
     override fun isModified(): Boolean {
         val state = ReviewMarkSettings.getInstance().state
-        return autoOpen.isSelected != state.autoOpenPreview || externalCliPath.text != state.externalCliPath
+        return autoOpen.isSelected != state.autoOpenPreview ||
+            nodeExecutablePath.text != state.nodeExecutablePath ||
+            externalCliPath.text != state.externalCliPath
     }
 
     override fun apply() {
         val state = ReviewMarkSettings.getInstance().state
         state.autoOpenPreview = autoOpen.isSelected
+        state.nodeExecutablePath = nodeExecutablePath.text.trim()
         state.externalCliPath = externalCliPath.text.trim().ifBlank { "reviewmark" }
     }
 
     override fun reset() {
         val state = ReviewMarkSettings.getInstance().state
         autoOpen.isSelected = state.autoOpenPreview
+        nodeExecutablePath.text = state.nodeExecutablePath
         externalCliPath.text = state.externalCliPath
     }
 }

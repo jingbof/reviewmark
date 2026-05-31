@@ -11,6 +11,7 @@ import com.intellij.openapi.components.service
 class ReviewMarkSettings : PersistentStateComponent<ReviewMarkSettings.State> {
     data class State(
         var autoOpenPreview: Boolean = true,
+        var nodeExecutablePath: String = "",
         var externalCliPath: String = "reviewmark",
     )
 

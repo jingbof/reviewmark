@@ -86,7 +86,10 @@ v0.4 editor actions:
 Settings:
 
 - Auto-open ReviewMark Preview.
+- Node executable path. Leave blank for auto-detection.
 - External CLI fallback path.
+
+The plugin bundles the ReviewMark renderer, but the bundled renderer currently runs on Node.js. The plugin auto-detects Node from the IDE environment, common macOS/Linux/Windows install locations, and common version-manager paths such as Volta, asdf, nvm, and fnm. If auto-detection fails, set `Node executable path` explicitly in `Settings` / `Preferences` -> `ReviewMark`.
 
 Limitations:
 

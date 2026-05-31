@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { describe, it } from "node:test";
@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const cliPath = join(repoRoot, "packages/reviewmark/dist/cli.js");
+const bundledRendererPath = join(repoRoot, "plugins/jetbrains/src/main/resources/reviewmark-renderer/renderer.js");
 
 const validMarkdown = `Paragraph.
 
@@ -89,6 +90,27 @@ Invalid.
       assert.notEqual(invalidResult.status, 0);
       assert.match(invalidResult.stderr, /invalid_type/);
       assert.match(invalidResult.stderr, /invalid_status/);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("runs the bundled renderer from a temporary .js file", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "reviewmark-renderer-"));
+    try {
+      const file = join(dir, "spec.md");
+      const tempRenderer = join(dir, "renderer.js");
+      await writeFile(file, validMarkdown, "utf8");
+      await copyFile(bundledRendererPath, tempRenderer);
+
+      const result = spawnSync(process.execPath, [tempRenderer, "--file", file], {
+        cwd: repoRoot,
+        encoding: "utf8",
+      });
+
+      assert.equal(result.status, 0, result.stderr);
+      assert.match(result.stdout, /CLI test comment/);
+      assert.match(result.stdout, /<!doctype html>/);
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
