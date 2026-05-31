@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ vars.ENABLE_GITHUB_PAGES == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

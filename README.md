@@ -70,7 +70,7 @@ pnpm build:site
 
 The site is a static Vite/React app. It reuses `@reviewmark/core` directly, so the browser playground exercises the same parser and HTML renderer as the CLI and JetBrains plugin.
 
-GitHub Pages deployment is configured in `.github/workflows/pages.yml`. In GitHub repository settings, set Pages to deploy from GitHub Actions and configure the custom domain as `reviewmark.dev`.
+GitHub Pages deployment is configured in `.github/workflows/pages.yml`. After Pages support is available for the repo, set repository variable `ENABLE_GITHUB_PAGES=true`, set Pages to deploy from GitHub Actions, and configure the custom domain as `reviewmark.dev`.
 
 GitHub Pages for a private repository requires plan support. If GitHub reports that Pages is unavailable for this private repo, make the repo public, upgrade the GitHub plan, or deploy the same `apps/demo` build through Vercel.
 
