@@ -7,8 +7,10 @@ export function renderReviewMarkHtml(input: string | ReviewMarkDocument, options
   const title = options.title ?? "ReviewMark";
   const commentsByBlock = groupCommentsByBlock(doc.comments);
   const articleHtml = renderArticle(doc, commentsByBlock);
-  const sidebarHtml = renderSidebar(doc.comments);
   const diagnosticHtml = renderDiagnostics(doc);
+  const commentSummary = `${doc.comments.length} comment${doc.comments.length === 1 ? "" : "s"}`;
+  const diagnosticSummary = `${doc.diagnostics.length} diagnostic${doc.diagnostics.length === 1 ? "" : "s"}`;
+  const firstCommentHref = doc.comments.length > 0 ? `#${escapeHtml(doc.comments[0].id)}` : "#reviewmark-document";
 
   return `<!doctype html>
 <html lang="en">
@@ -23,17 +25,16 @@ export function renderReviewMarkHtml(input: string | ReviewMarkDocument, options
     <header class="reviewmark-header">
       <div>
         <h1>${escapeHtml(title)}</h1>
-        <p>${doc.comments.length} comment${doc.comments.length === 1 ? "" : "s"} · ${doc.diagnostics.length} diagnostic${doc.diagnostics.length === 1 ? "" : "s"}</p>
+        <p>${commentSummary} · ${diagnosticSummary}</p>
       </div>
       <nav>
-        <a href="#reviewmark-comments">Comments</a>
+        <a href="${firstCommentHref}">Comments</a>
         <a href="#reviewmark-diagnostics">Diagnostics</a>
       </nav>
     </header>
     ${diagnosticHtml}
     <main class="reviewmark-layout">
-      <article class="reviewmark-document">${articleHtml}</article>
-      ${sidebarHtml}
+      <article class="reviewmark-document" id="reviewmark-document">${articleHtml}</article>
     </main>
   </div>
 </body>
@@ -49,47 +50,39 @@ function renderArticle(doc: ReviewMarkDocument, commentsByBlock: Map<number, Rev
     .map((block) => {
       const comments = commentsByBlock.get(block.index) ?? [];
       const renderedBlock = marked.parse(block.markdown, { async: false }) as string;
-      const callouts = comments.map(renderInlineComment).join("");
+      const callouts = comments.map(renderCommentCard).join("");
       const hasCommentsClass = comments.length > 0 ? " has-comments" : "";
 
-      return `<section class="reviewmark-block${hasCommentsClass}" id="block-${block.index + 1}" data-line="${block.startLine ?? ""}">
-  <div class="reviewmark-block-content">${renderedBlock}</div>
-  ${callouts ? `<div class="reviewmark-inline-comments">${callouts}</div>` : ""}
+      return `<section class="reviewmark-row${hasCommentsClass}" id="block-${block.index + 1}" data-line="${block.startLine ?? ""}">
+  <div class="reviewmark-block">
+    <div class="reviewmark-block-content">${renderedBlock}</div>
+  </div>
+  <div class="reviewmark-comment-gutter" aria-label="Review comments for block ${block.index + 1}">
+    ${callouts || `<span class="reviewmark-gutter-empty" aria-hidden="true"></span>`}
+  </div>
 </section>`;
     })
     .join("\n");
 }
 
-function renderInlineComment(comment: ReviewMarkComment): string {
-  const line = comment.startLine ? ` <a href="reviewmark://line/${comment.startLine}">line ${comment.startLine}</a>` : "";
-  return `<aside class="reviewmark-comment ${escapeHtml(comment.metadata.status)} ${escapeHtml(comment.metadata.type)}" id="${escapeHtml(comment.id)}">
-  <div class="reviewmark-comment-meta">
-    <span>${escapeHtml(comment.metadata.author)}</span>
-    <span>${escapeHtml(comment.metadata.type)}</span>
-    <span>${escapeHtml(comment.metadata.status)}</span>
-    ${line}
-  </div>
+function renderCommentCard(comment: ReviewMarkComment): string {
+  const line = comment.startLine ? `<a href="reviewmark://line/${comment.startLine}">line ${comment.startLine}</a>` : "";
+  const status = escapeHtml(comment.metadata.status);
+  const type = escapeHtml(comment.metadata.type);
+  return `<aside class="reviewmark-comment ${status} ${type}" id="${escapeHtml(comment.id)}" style="--rm-comment-color: var(--rm-${type})">
+  <header class="reviewmark-comment-header">
+    <span class="reviewmark-avatar" aria-hidden="true">${escapeHtml(initials(comment.metadata.author))}</span>
+    <span class="reviewmark-comment-meta">
+      <strong>${escapeHtml(comment.metadata.author)}</strong>
+      <span><i></i>${type}</span>
+    </span>
+    <span class="reviewmark-status">${status}</span>
+  </header>
   <div class="reviewmark-comment-body">${marked.parse(comment.body, { async: false }) as string}</div>
-</aside>`;
-}
-
-function renderSidebar(comments: ReviewMarkComment[]): string {
-  const items = comments
-    .map((comment) => {
-      const targetLink =
-        comment.attachedToBlockIndex !== undefined ? `#block-${comment.attachedToBlockIndex + 1}` : `#${comment.id}`;
-      return `<li>
-  <a href="${targetLink}">
-    <strong>${escapeHtml(comment.id)}</strong>
-    <span>${escapeHtml(comment.metadata.author)} · ${escapeHtml(comment.metadata.type)} · ${escapeHtml(comment.metadata.status)}</span>
-  </a>
-</li>`;
-    })
-    .join("");
-
-  return `<aside class="reviewmark-sidebar" id="reviewmark-comments">
-  <h2>Review Comments</h2>
-  ${items ? `<ol>${items}</ol>` : `<p>No ReviewMark comments found.</p>`}
+  <footer class="reviewmark-comment-footer">
+    <code>${escapeHtml(comment.id)}</code>
+    ${line}
+  </footer>
 </aside>`;
 }
 
@@ -120,91 +113,227 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;");
 }
 
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "RM";
+  return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase();
+}
+
 const REVIEWMARK_CSS = `
 :root {
   color-scheme: light dark;
-  --rm-bg: #f7f7f4;
-  --rm-paper: #fffdfa;
-  --rm-ink: #20211d;
-  --rm-muted: #6b6d63;
-  --rm-border: #dfddd4;
+  --rm-bg: #f6f7f4;
+  --rm-paper: #fffefa;
+  --rm-paper-soft: #f5f6f1;
+  --rm-ink: #20221e;
+  --rm-muted: #687069;
+  --rm-faint: #8d948d;
+  --rm-border: #deded5;
+  --rm-border-strong: #c8cbc0;
   --rm-accent: #2f6f73;
-  --rm-accent-soft: #e2f1ef;
-  --rm-issue: #a0461f;
+  --rm-accent-soft: #e3f1ef;
+  --rm-issue: #b45d22;
+  --rm-suggestion: #2f6f73;
+  --rm-question: #7356a8;
+  --rm-praise: #347a49;
+  --rm-note: #596372;
   --rm-critical: #9d2438;
-  --rm-praise: #3d7b45;
-  --rm-note: #53606f;
-  --rm-shadow: 0 18px 50px rgba(42, 41, 34, 0.08);
+  --rm-shadow: 0 22px 60px rgba(42, 41, 34, 0.08);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --rm-bg: #151718;
-    --rm-paper: #1d2021;
-    --rm-ink: #e8eceb;
-    --rm-muted: #a5aaa7;
-    --rm-border: #343a3b;
-    --rm-accent: #7dc9c4;
-    --rm-accent-soft: #1f3536;
-    --rm-issue: #f0a06f;
-    --rm-critical: #ff7b96;
-    --rm-praise: #91d18b;
-    --rm-note: #96a3b4;
+    --rm-bg: #07090d;
+    --rm-paper: #0c1017;
+    --rm-paper-soft: #111721;
+    --rm-ink: #eef3f8;
+    --rm-muted: #9aa5b4;
+    --rm-faint: #687487;
+    --rm-border: #222b38;
+    --rm-border-strong: #334155;
+    --rm-accent: #58d6bd;
+    --rm-accent-soft: #0e2425;
+    --rm-issue: #f0a45d;
+    --rm-suggestion: #58d6bd;
+    --rm-question: #b596f0;
+    --rm-praise: #83e29e;
+    --rm-note: #9bb2ff;
+    --rm-critical: #ff6f9d;
     --rm-shadow: none;
   }
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--rm-bg); color: var(--rm-ink); }
-.reviewmark-shell { max-width: 1440px; margin: 0 auto; padding: 28px; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 48% -16%, color-mix(in srgb, var(--rm-accent) 10%, transparent), transparent 34rem),
+    var(--rm-bg);
+  color: var(--rm-ink);
+}
+.reviewmark-shell { max-width: 1320px; margin: 0 auto; padding: 28px; }
 .reviewmark-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 10px 0 28px; }
 .reviewmark-header h1 { margin: 0; font-size: clamp(28px, 4vw, 48px); line-height: 1.02; letter-spacing: 0; }
 .reviewmark-header p { margin: 8px 0 0; color: var(--rm-muted); font-size: 15px; }
 .reviewmark-header nav { display: flex; gap: 14px; }
 .reviewmark-header a { color: var(--rm-accent); font-size: 14px; font-weight: 700; text-decoration: none; }
-.reviewmark-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
-.reviewmark-document, .reviewmark-sidebar, .reviewmark-diagnostics { background: var(--rm-paper); border: 1px solid var(--rm-border); box-shadow: var(--rm-shadow); }
-.reviewmark-document { padding: 26px; }
-.reviewmark-block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 16px 18px; border: 1px solid transparent; border-radius: 8px; }
-.reviewmark-block + .reviewmark-block { margin-top: 8px; }
-.reviewmark-block.has-comments { border-color: #c8dad6; background: #fbfffe; }
-@media (prefers-color-scheme: dark) {
-  .reviewmark-block.has-comments { border-color: #345457; background: #182425; }
+.reviewmark-layout { display: block; }
+.reviewmark-document, .reviewmark-diagnostics {
+  background: color-mix(in srgb, var(--rm-paper) 96%, transparent);
+  border: 1px solid var(--rm-border);
+  border-radius: 10px;
+  box-shadow: var(--rm-shadow);
 }
+.reviewmark-document { padding: 28px; }
+.reviewmark-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 286px);
+  gap: 22px;
+  align-items: start;
+  min-width: 0;
+}
+.reviewmark-row + .reviewmark-row { margin-top: 4px; }
+.reviewmark-block {
+  position: relative;
+  min-width: 0;
+  border-radius: 7px;
+  padding: 11px 14px;
+  transition: background 0.16s ease;
+}
+.reviewmark-row.has-comments .reviewmark-block::before {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: -1px;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--rm-accent);
+  opacity: 0.72;
+  content: "";
+}
+.reviewmark-row.has-comments:hover .reviewmark-block {
+  background: color-mix(in srgb, var(--rm-accent) 8%, transparent);
+}
+.reviewmark-comment-gutter {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 8px;
+}
+.reviewmark-gutter-empty { display: block; min-height: 1px; }
 .reviewmark-block-content > :first-child, .reviewmark-comment-body > :first-child { margin-top: 0; }
 .reviewmark-block-content > :last-child, .reviewmark-comment-body > :last-child { margin-bottom: 0; }
 .reviewmark-block-content { min-width: 0; font-size: 16px; line-height: 1.68; }
 .reviewmark-block-content h1, .reviewmark-block-content h2, .reviewmark-block-content h3 { line-height: 1.15; letter-spacing: 0; }
-.reviewmark-block-content h1 { font-size: 34px; }
-.reviewmark-block-content h2 { font-size: 26px; }
-.reviewmark-block-content code { background: #efeee8; border-radius: 4px; padding: 0.1em 0.3em; }
-.reviewmark-block-content pre { overflow: auto; background: #20211d; color: #f8f6ee; border-radius: 8px; padding: 16px; }
-.reviewmark-inline-comments { display: grid; gap: 10px; }
-.reviewmark-comment { border-left: 4px solid var(--rm-note); background: #f5f6f3; border-radius: 6px; padding: 12px 14px; }
-@media (prefers-color-scheme: dark) {
-  .reviewmark-block-content code { background: #2a2f31; }
-  .reviewmark-block-content pre { background: #111314; color: #e8eceb; }
-  .reviewmark-comment { background: #242829; }
+.reviewmark-block-content h1 { margin-top: 0; font-size: 34px; }
+.reviewmark-block-content h2 { font-size: 24px; }
+.reviewmark-block-content h3 { font-size: 18px; }
+.reviewmark-block-content p, .reviewmark-block-content li { color: var(--rm-muted); }
+.reviewmark-block-content li::marker { color: var(--rm-faint); }
+.reviewmark-block-content code {
+  border: 1px solid color-mix(in srgb, var(--rm-border) 70%, transparent);
+  border-radius: 5px;
+  padding: 0.1em 0.32em;
+  background: var(--rm-paper-soft);
+  color: var(--rm-ink);
+  font-size: 0.9em;
 }
-.reviewmark-comment.issue { border-left-color: var(--rm-issue); }
-.reviewmark-comment.suggestion { border-left-color: var(--rm-accent); }
-.reviewmark-comment.question { border-left-color: #7561a8; }
-.reviewmark-comment.praise { border-left-color: var(--rm-praise); }
-.reviewmark-comment.resolved, .reviewmark-comment.rejected { opacity: 0.66; }
-.reviewmark-comment-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; color: var(--rm-muted); font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-.reviewmark-comment-meta a { color: var(--rm-accent); text-decoration: none; }
-.reviewmark-comment-body { font-size: 14px; line-height: 1.55; }
-.reviewmark-sidebar { position: sticky; top: 20px; padding: 20px; border-radius: 8px; }
-.reviewmark-sidebar h2, .reviewmark-diagnostics h2 { margin: 0 0 14px; font-size: 16px; }
-.reviewmark-sidebar ol { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.reviewmark-sidebar a { display: grid; gap: 4px; padding: 12px; border-radius: 6px; background: var(--rm-accent-soft); color: var(--rm-ink); text-decoration: none; }
-.reviewmark-sidebar span { color: var(--rm-accent); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+.reviewmark-block-content pre {
+  overflow: auto;
+  border: 1px solid var(--rm-border);
+  border-radius: 8px;
+  padding: 16px;
+  background: #20211d;
+  color: #f8f6ee;
+}
+.reviewmark-comment {
+  --rm-comment-color: var(--rm-note);
+  border: 1px solid var(--rm-border);
+  border-left: 2px solid var(--rm-comment-color);
+  border-radius: 8px;
+  padding: 11px 12px 10px;
+  background: var(--rm-paper-soft);
+  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+.reviewmark-row:hover .reviewmark-comment {
+  border-color: color-mix(in srgb, var(--rm-comment-color) 46%, var(--rm-border));
+  background: color-mix(in srgb, var(--rm-comment-color) 9%, var(--rm-paper-soft));
+}
+.reviewmark-comment.resolved, .reviewmark-comment.rejected { opacity: 0.64; }
+.reviewmark-comment-header { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.reviewmark-avatar {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--rm-comment-color) 34%, transparent);
+  border-radius: 6px;
+  color: var(--rm-comment-color);
+  background: color-mix(in srgb, var(--rm-comment-color) 14%, transparent);
+  font-size: 10px;
+  font-weight: 800;
+}
+.reviewmark-comment-meta { display: grid; min-width: 0; line-height: 1.25; }
+.reviewmark-comment-meta strong { overflow: hidden; color: var(--rm-ink); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.reviewmark-comment-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--rm-faint);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: lowercase;
+}
+.reviewmark-comment-meta i {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--rm-comment-color);
+}
+.reviewmark-status {
+  margin-left: auto;
+  border: 1px solid color-mix(in srgb, var(--rm-border) 80%, transparent);
+  border-radius: 999px;
+  padding: 2px 7px;
+  color: var(--rm-faint);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+.reviewmark-comment-body { margin-top: 10px; color: var(--rm-muted); font-size: 13px; line-height: 1.52; }
+.reviewmark-comment-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+.reviewmark-comment-footer code {
+  overflow: hidden;
+  color: var(--rm-faint);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.reviewmark-comment-footer a { flex: 0 0 auto; color: var(--rm-comment-color); font-size: 11px; font-weight: 700; text-decoration: none; }
 .reviewmark-diagnostics { margin-bottom: 24px; padding: 18px 20px; border-radius: 8px; }
+.reviewmark-diagnostics h2 { margin: 0 0 14px; font-size: 16px; }
 .reviewmark-diagnostics li { color: var(--rm-critical); font-size: 14px; }
 .reviewmark-diagnostics li.warning { color: var(--rm-issue); }
 .reviewmark-empty { color: var(--rm-muted); }
-@media (max-width: 900px) {
+@media (prefers-color-scheme: dark) {
+  .reviewmark-block-content pre { background: #090d13; color: #e8eceb; }
+}
+@media (max-width: 560px) {
   .reviewmark-shell { padding: 18px; }
-  .reviewmark-layout { grid-template-columns: 1fr; }
-  .reviewmark-sidebar { position: static; }
+  .reviewmark-header { display: grid; }
+  .reviewmark-document { padding: 18px; }
+  .reviewmark-row { grid-template-columns: 1fr; gap: 6px; }
+  .reviewmark-row + .reviewmark-row { margin-top: 14px; }
+  .reviewmark-comment-gutter { padding: 0 0 0 14px; }
 }
 `;

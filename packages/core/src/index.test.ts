@@ -163,6 +163,7 @@ Invalid metadata.
 
     assert.equal(html.includes("rm-date"), true);
     assert.equal(html.includes("This needs an example"), true);
+    assert.equal(html.includes("reviewmark-comment-gutter"), true);
     assert.equal(html.includes("<title>Spec</title>"), true);
   });
 });

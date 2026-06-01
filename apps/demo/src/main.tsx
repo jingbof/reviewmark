@@ -507,42 +507,41 @@ function forceDarkPreview(html: string): string {
     }
     .reviewmark-shell { max-width: 1280px; padding: 26px; }
     .reviewmark-header { display: none; }
-    .reviewmark-layout { grid-template-columns: minmax(0, 1fr) minmax(210px, 280px); gap: 14px; }
-    .reviewmark-document, .reviewmark-sidebar, .reviewmark-diagnostics {
+    .reviewmark-document, .reviewmark-diagnostics {
       background: rgba(11, 16, 23, 0.96);
       border-color: #222b38;
       border-radius: 10px;
       box-shadow: 0 18px 60px rgba(0, 0, 0, 0.26);
     }
     .reviewmark-document { padding: 26px; }
-    .reviewmark-block { border-radius: 7px; padding: 15px 16px; }
-    .reviewmark-block.has-comments {
-      border-color: rgba(88, 214, 189, 0.3);
-      background: rgba(12, 28, 29, 0.7);
+    .reviewmark-row {
+      grid-template-columns: minmax(0, 1fr) minmax(190px, 250px);
+      gap: 16px;
+    }
+    .reviewmark-block { border-radius: 7px; padding: 13px 16px; }
+    .reviewmark-row.has-comments .reviewmark-block::before {
+      background: #58d6bd;
+      opacity: 0.8;
+    }
+    .reviewmark-row.has-comments:hover .reviewmark-block {
+      background: rgba(88, 214, 189, 0.075);
     }
     .reviewmark-block-content h1 { font-size: 30px; letter-spacing: 0; }
     .reviewmark-block-content h2 { font-size: 22px; margin-top: 0; }
     .reviewmark-block-content { color: #dce4ee; font-size: 14px; line-height: 1.65; }
     .reviewmark-block-content li::marker { color: #58d6bd; }
     .reviewmark-comment {
-      border-left-width: 3px;
+      border-left-width: 2px;
       background: rgba(16, 22, 31, 0.96);
       border-radius: 8px;
     }
-    .reviewmark-comment-meta { color: #9ba7b7; letter-spacing: 0; text-transform: none; }
-    .reviewmark-comment.issue { border-left-color: #ff6f8d; }
-    .reviewmark-comment.suggestion { border-left-color: #58d6bd; }
-    .reviewmark-sidebar { top: 18px; padding: 17px; }
-    .reviewmark-sidebar h2 { font-size: 13px; letter-spacing: 0.02em; text-transform: uppercase; color: #cbd5e1; }
-    .reviewmark-sidebar a {
-      border: 1px solid rgba(141, 152, 168, 0.14);
-      background: rgba(88, 214, 189, 0.075);
-    }
-    .reviewmark-sidebar strong { font-size: 13px; }
-    .reviewmark-sidebar span { color: #58d6bd; font-size: 11px; letter-spacing: 0; }
-    @media (max-width: 760px) {
+    .reviewmark-comment.issue { --rm-comment-color: #ff8a6b; }
+    .reviewmark-comment.suggestion { --rm-comment-color: #58d6bd; }
+    .reviewmark-comment.question { --rm-comment-color: #b596f0; }
+    .reviewmark-comment.praise { --rm-comment-color: #83e29e; }
+    @media (max-width: 560px) {
       .reviewmark-shell { padding: 18px; }
-      .reviewmark-layout { grid-template-columns: 1fr; }
+      .reviewmark-row { grid-template-columns: 1fr; }
     }
   `;
   return html.replace("</style>", `${css}</style>`);
