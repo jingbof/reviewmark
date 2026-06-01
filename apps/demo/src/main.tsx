@@ -627,7 +627,7 @@ function forceDarkPreview(html: string): string {
       .reviewmark-row { grid-template-columns: 1fr; }
     }
   `;
-  return html.replace("</style>", `${css}</style>`);
+  return html.replace("<head>", `<head><base href="about:srcdoc">`).replace("</style>", `${css}</style>`);
 }
 
 function readRoute(): Route {
