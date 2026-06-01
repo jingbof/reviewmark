@@ -2,7 +2,7 @@
 
 ReviewMark is a CommonMark-compatible review-comment extension for Markdown.
 
-It lets humans and AI agents add structured review comments using hidden HTML comment blocks. Normal Markdown renderers hide these comments, while ReviewMark-aware tools render them as side comments.
+It lets humans and AI agents keep review comments inside plain Markdown, then renders those comments as a focused review layer beside the document. Technical docs, specs, and AI-generated plans stay portable text while ReviewMark-aware tools show the annotations.
 
 ![ReviewMark demo showing Markdown source beside rendered review comments](docs/assets/reviewmark-demo.webp)
 
@@ -88,7 +88,7 @@ GitHub Pages deployment is also available in `.github/workflows/pages.yml` as a 
 
 The JetBrains plugin lives under `plugins/jetbrains`.
 
-The plugin does not replace WebStorm's built-in Markdown preview. Instead, it provides a ReviewMark-aware preview tool window that automatically opens when a Markdown file contains `<!-- reviewmark`.
+The plugin does not replace WebStorm's built-in Markdown preview. Instead, it provides a ReviewMark Preview tool window that automatically opens when a Markdown file contains `<!-- reviewmark` and renders comments as an IDE-native review layer.
 
 Usage:
 
@@ -105,18 +105,18 @@ ReviewMark: Open Preview
 
 The manual action is available from Search Everywhere, Tools, and the editor context menu.
 
-v0.4 editor actions:
+Current editor actions:
 
 - `ReviewMark: Insert Comment`: inserts a ReviewMark comment below the selected block or current line.
 - `ReviewMark: Resolve/Reopen Comment`: toggles the nearest ReviewMark comment between `open` and `resolved`.
 
 Settings:
 
-- Auto-open ReviewMark Preview.
+- Auto-open ReviewMark Preview for Markdown files with comments.
 - Node executable path. Leave blank for auto-detection.
-- External CLI fallback path.
+- CLI fallback path.
 
-The plugin bundles the ReviewMark renderer, but the bundled renderer currently runs on Node.js. The plugin auto-detects Node from the IDE environment, common macOS/Linux/Windows install locations, and common version-manager paths such as Volta, asdf, nvm, and fnm. If auto-detection fails, set `Node executable path` explicitly in `Settings` / `Preferences` -> `ReviewMark`.
+The plugin bundles the ReviewMark renderer, but the bundled renderer currently runs on Node.js. The plugin auto-detects Node from the IDE environment, common macOS/Linux/Windows install locations, and common version-manager paths such as Volta, asdf, nvm, and fnm. If auto-detection fails, set `Node executable path (optional)` explicitly in `Settings` / `Preferences` -> `ReviewMark`.
 
 Limitations:
 
@@ -164,11 +164,11 @@ pnpm build:jetbrains-renderer
 Build or run the JetBrains plugin from `plugins/jetbrains` with Gradle:
 
 ```bash
-./gradlew buildPlugin
-./gradlew runIde
+gradle buildPlugin
+gradle runIde
 ```
 
-If your checkout does not have a Gradle wrapper yet, use a local Gradle installation to generate one or run the same tasks.
+If you add a Gradle wrapper locally, the equivalent wrapper commands are `./gradlew buildPlugin` and `./gradlew runIde`.
 
 ## Manual Plugin Test Cases
 

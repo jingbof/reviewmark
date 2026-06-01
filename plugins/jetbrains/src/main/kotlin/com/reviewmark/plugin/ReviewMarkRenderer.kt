@@ -48,7 +48,7 @@ object ReviewMarkRenderer {
         return runProcess(
             executable = executable,
             args = listOf("render", filePath, "--stdout"),
-            fallbackMessage = "ReviewMark renderer not available. Install the CLI with:\nnpm install -g reviewmark",
+            fallbackMessage = "ReviewMark renderer not available. Install the CLI with:\nnpm install -g reviewmarks",
         )
     }
 

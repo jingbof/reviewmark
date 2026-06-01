@@ -32,7 +32,7 @@ intellijPlatform {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
         }
         description = """
-            ReviewMark renders hidden Markdown review comments as side comments inside JetBrains IDEs.
+            ReviewMark keeps review comments inside plain Markdown and renders them as a focused review layer inside JetBrains IDEs.
         """.trimIndent()
     }
 

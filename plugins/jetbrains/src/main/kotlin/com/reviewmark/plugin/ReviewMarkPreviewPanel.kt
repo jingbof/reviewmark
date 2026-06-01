@@ -62,26 +62,30 @@ class ReviewMarkPreviewPanel(
               <style>
                 :root {
                   color-scheme: light dark;
-                  --bg: #fffdfa;
-                  --text: #20211d;
-                  --muted: #5f655f;
-                  --panel: #f4f2ea;
-                  --border: #dfddd4;
+                  --bg: #f6f7f4;
+                  --text: #20221e;
+                  --muted: #687069;
+                  --panel: #fffefa;
+                  --border: #deded5;
+                  --accent: #2f6f73;
                 }
                 @media (prefers-color-scheme: dark) {
                   :root {
-                    --bg: #151718;
-                    --text: #e8eceb;
-                    --muted: #a5aaa7;
-                    --panel: #242829;
-                    --border: #343a3b;
+                    --bg: #07090d;
+                    --text: #eef3f8;
+                    --muted: #9aa5b4;
+                    --panel: #0c1017;
+                    --border: #222b38;
+                    --accent: #45d0e8;
                   }
                 }
                 body {
                   margin: 0;
                   font-family: system-ui, sans-serif;
                   padding: 24px;
-                  background: var(--bg);
+                  background:
+                    radial-gradient(circle at 50% -20%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 28rem),
+                    var(--bg);
                   color: var(--text);
                 }
                 h2 { margin-top: 0; color: var(--text); }
@@ -99,6 +103,7 @@ class ReviewMarkPreviewPanel(
             </head>
             <body>
               <h2>ReviewMark render failed</h2>
+              <p>ReviewMark keeps comments inside Markdown. The JetBrains preview could not render this file.</p>
               <pre>$escaped</pre>
             </body>
             </html>

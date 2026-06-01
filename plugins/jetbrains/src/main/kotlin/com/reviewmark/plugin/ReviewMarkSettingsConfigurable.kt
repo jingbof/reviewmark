@@ -10,7 +10,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 class ReviewMarkSettingsConfigurable : Configurable {
-    private val autoOpen = JBCheckBox("Auto-open ReviewMark Preview")
+    private val autoOpen = JBCheckBox("Auto-open ReviewMark Preview for Markdown files with comments")
     private val nodeExecutablePath = JBTextField()
     private val externalCliPath = JBTextField()
     private var panel: JPanel? = null
@@ -33,7 +33,7 @@ class ReviewMarkSettingsConfigurable : Configurable {
             constraints.gridy = 1
             constraints.gridwidth = 1
             constraints.weightx = 0.0
-            add(JBLabel("Node executable path:"), constraints)
+            add(JBLabel("Node executable path (optional):"), constraints)
 
             constraints.gridx = 1
             constraints.weightx = 1.0
@@ -42,7 +42,7 @@ class ReviewMarkSettingsConfigurable : Configurable {
             constraints.gridx = 0
             constraints.gridy = 2
             constraints.weightx = 0.0
-            add(JBLabel("External CLI fallback path:"), constraints)
+            add(JBLabel("CLI fallback path:"), constraints)
 
             constraints.gridx = 1
             constraints.weightx = 1.0

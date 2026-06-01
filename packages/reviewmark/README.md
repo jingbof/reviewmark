@@ -1,6 +1,8 @@
 # ReviewMark CLI
 
-ReviewMark adds hidden, structured review comments to Markdown and renders them beside the blocks they review.
+ReviewMark keeps review comments inside plain Markdown and renders them beside the blocks they review.
+
+Use it for technical docs, specs, and AI-generated plans that need review comments without leaving portable text.
 
 ## Install
 

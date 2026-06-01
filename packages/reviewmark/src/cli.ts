@@ -345,7 +345,7 @@ Usage:
   reviewmark strip <file> [--out clean.md]
   reviewmark preview <file> [--port 4317] [--host 127.0.0.1] [--no-open]
 
-Review comments are hidden HTML comments:
+Review comments live inside Markdown as HTML comment blocks:
 
   <!-- reviewmark
   id: rm-1

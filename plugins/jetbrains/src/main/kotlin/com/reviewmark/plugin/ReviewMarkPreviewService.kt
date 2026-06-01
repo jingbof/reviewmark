@@ -85,7 +85,7 @@ class ReviewMarkPreviewService(private val project: Project) : Disposable {
         val panel = JPanel(BorderLayout()).apply {
             border = JBUI.Borders.empty(24)
             add(
-                JBLabel("Open a Markdown file with ReviewMark comments.", SwingConstants.CENTER).apply {
+                JBLabel("Open a Markdown file containing <!-- reviewmark to preview comments inside Markdown.", SwingConstants.CENTER).apply {
                     foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
                 },
                 BorderLayout.CENTER,

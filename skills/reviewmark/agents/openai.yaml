@@ -1,4 +1,4 @@
 interface:
   display_name: "ReviewMark"
-  short_description: "Annotate Markdown with hidden review comments"
-  default_prompt: "Use $reviewmark to review this Markdown file with hidden ReviewMark comments."
+  short_description: "Review Markdown with comments inside the file"
+  default_prompt: "Use $reviewmark to review this Markdown file with ReviewMark comments inside the file."

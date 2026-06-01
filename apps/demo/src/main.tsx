@@ -517,8 +517,8 @@ reviewmark preview spec.md`}</pre>
       <section>
         <h2>JetBrains plugin</h2>
         <p>
-          The WebStorm plugin adds a ReviewMark Preview tool window and editor actions for inserting comments and
-          toggling comment status. It does not replace the built-in Markdown preview.
+          The JetBrains plugin adds a ReviewMark Preview tool window and editor actions for comments that stay inside
+          Markdown. It does not replace the built-in Markdown preview.
         </p>
       </section>
       <section>

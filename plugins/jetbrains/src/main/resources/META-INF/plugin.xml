@@ -5,7 +5,7 @@
 
   <description>
     ReviewMark is a CommonMark-compatible review-comment extension for Markdown.
-    It renders hidden ReviewMark comments as side comments inside JetBrains IDEs.
+    It keeps review comments inside plain Markdown and renders them as a focused review layer inside JetBrains IDEs.
   </description>
 
   <depends>com.intellij.modules.platform</depends>
@@ -20,6 +20,7 @@
     <toolWindow
       id="ReviewMark Preview"
       anchor="right"
+      icon="/icons/reviewmark.svg"
       factoryClass="com.reviewmark.plugin.ReviewMarkToolWindowFactory"
       canCloseContents="true"/>
   </extensions>
@@ -29,7 +30,8 @@
       id="ReviewMark.OpenPreview"
       class="com.reviewmark.plugin.ReviewMarkOpenPreviewAction"
       text="ReviewMark: Open Preview"
-      description="Open ReviewMark preview for the current Markdown file">
+      description="Open the ReviewMark review layer for the current Markdown file"
+      icon="/icons/reviewmark.svg">
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
       <add-to-group group-id="ToolsMenu" anchor="last"/>
     </action>
@@ -37,14 +39,16 @@
       id="ReviewMark.InsertComment"
       class="com.reviewmark.plugin.ReviewMarkInsertCommentAction"
       text="ReviewMark: Insert Comment"
-      description="Insert a ReviewMark comment below the selected Markdown block">
+      description="Insert a ReviewMark comment inside the Markdown file"
+      icon="/icons/reviewmark.svg">
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </action>
     <action
       id="ReviewMark.ToggleCommentStatus"
       class="com.reviewmark.plugin.ReviewMarkToggleCommentStatusAction"
       text="ReviewMark: Resolve/Reopen Comment"
-      description="Toggle the nearest ReviewMark comment between open and resolved">
+      description="Toggle the nearest ReviewMark comment between open and resolved"
+      icon="/icons/reviewmark.svg">
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </action>
   </actions>

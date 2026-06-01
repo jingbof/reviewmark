@@ -5,7 +5,7 @@ description: Add, preserve, resolve, and validate ReviewMark comments in Markdow
 
 # ReviewMark
 
-ReviewMark stores review feedback inside hidden HTML comment blocks. Normal Markdown renderers hide the comments, while the `reviewmark` CLI can list, validate, render, strip, and preview them.
+ReviewMark stores review feedback inside plain Markdown as HTML comment blocks. Normal Markdown renderers hide the comments, while the `reviewmark` CLI can list, validate, render, strip, and preview them.
 
 ## Core Rule
 
@@ -52,7 +52,7 @@ When asked to review a Markdown document:
 5. Add your comments as separate ReviewMark blocks.
 6. Keep comments concise, actionable, and specific.
 7. Use type honestly. Most comments should be `note`, `suggestion`, or `question`; use `issue` for correctness, security, legal, financial, architectural, or product risks, and use `praise` only for positive feedback worth preserving.
-8. Validate before finishing when the CLI is available: `npx reviewmark validate <file>` or `pnpm reviewmark validate <file>` inside this repo.
+8. Validate before finishing when the CLI is available: `npx reviewmarks validate <file>` or `pnpm reviewmark validate <file>` inside this repo.
 
 ## Resolving
 
