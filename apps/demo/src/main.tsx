@@ -1,7 +1,7 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { parseReviewMark, renderReviewMarkHtml, stripReviewMarks } from "@reviewmark/core";
+import { parseReviewMark, renderReviewMarkHtml } from "@reviewmark/core";
 import "./styles.css";
 
 const sampleMarkdown = `# Payroll payrun matching
@@ -127,8 +127,6 @@ function App() {
 
   const document = useMemo(() => parseReviewMark(markdown), [markdown]);
   const previewHtml = useMemo(() => forceDarkPreview(renderReviewMarkHtml(document, { title: "ReviewMark Live Preview" })), [document]);
-  const cleanMarkdown = useMemo(() => stripReviewMarks(markdown), [markdown]);
-
   function navigate(nextRoute: Route) {
     if (nextRoute === route) return;
     window.history.pushState(null, "", nextRoute);
@@ -151,7 +149,6 @@ function App() {
             previewHtml={previewHtml}
             comments={document.comments.length}
             diagnostics={document.diagnostics.length}
-            cleanMarkdown={cleanMarkdown}
           />
         )}
         {route === "/spec" && <Spec />}
@@ -216,14 +213,12 @@ function Playground({
   previewHtml,
   comments,
   diagnostics,
-  cleanMarkdown,
 }: {
   markdown: string;
   setMarkdown: (value: string) => void;
   previewHtml: string;
   comments: number;
   diagnostics: number;
-  cleanMarkdown: string;
 }) {
   const detailItems = [
     "CommonMark-compatible",
@@ -307,14 +302,14 @@ function Playground({
         </section>
       </div>
 
-      <HowItWorks cleanMarkdown={cleanMarkdown} />
+      <HowItWorks />
       <SyntaxSection />
       <GetStarted />
     </section>
   );
 }
 
-function HowItWorks({ cleanMarkdown }: { cleanMarkdown: string }) {
+function HowItWorks() {
   return (
     <section className="section-block" id="how-it-works">
       <div className="section-heading">
@@ -339,13 +334,6 @@ function HowItWorks({ cleanMarkdown }: { cleanMarkdown: string }) {
           <p>The same parser powers the browser demo, CLI output, WebStorm preview, and agent skill.</p>
         </article>
       </div>
-      <div className="source-strip">
-        <div>
-          <h3>Portable source, enhanced preview</h3>
-          <p>Strip or validate ReviewMark comments without changing the underlying document.</p>
-        </div>
-        <pre>{cleanMarkdown}</pre>
-      </div>
     </section>
   );
 }
@@ -359,7 +347,13 @@ function SyntaxSection() {
         <p>The comment body is Markdown, and the whole block stays invisible to standard CommonMark rendering.</p>
       </div>
       <div className="syntax-grid">
-        <pre>{syntaxSnippet}</pre>
+        <div className="syntax-card">
+          <div className="code-window-header">
+            <span aria-hidden="true" />
+            <strong>review.md</strong>
+          </div>
+          <pre>{syntaxSnippet}</pre>
+        </div>
         <div className="steps">
           <article>
             <span>1</span>
@@ -382,6 +376,12 @@ function SyntaxSection() {
               <p>The body can include Markdown and renders inside the review card.</p>
             </div>
           </article>
+          <div className="type-legend" aria-label="ReviewMark type colors">
+            <span className="issue">issue</span>
+            <span className="suggestion">suggestion</span>
+            <span className="question">question</span>
+            <span className="praise">praise</span>
+          </div>
         </div>
       </div>
     </section>

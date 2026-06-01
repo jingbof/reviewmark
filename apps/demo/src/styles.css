@@ -436,7 +436,6 @@ iframe {
   background: #070a0f;
 }
 
-.source-strip,
 .section-block,
 .content-page,
 .feature-rail article {
@@ -481,14 +480,6 @@ iframe {
   line-height: 1.6;
 }
 
-.source-strip {
-  display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
-  gap: 22px;
-  padding: 22px;
-}
-
-.source-strip h3,
 .content-grid h2,
 .example-row h2,
 .feature-rail h3,
@@ -499,7 +490,6 @@ iframe {
   line-height: 1.2;
 }
 
-.source-strip p,
 .content-grid p,
 .example-row p,
 .content-grid li,
@@ -554,9 +544,46 @@ code {
 
 .syntax-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 390px;
-  gap: 18px;
+  grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+  gap: 28px;
   align-items: start;
+}
+
+.syntax-card {
+  overflow: hidden;
+  border: 1px solid rgba(146, 160, 180, 0.18);
+  border-radius: 9px;
+  background: #080c12;
+}
+
+.syntax-card pre {
+  border: 0;
+  border-top: 1px solid rgba(146, 160, 180, 0.14);
+  border-radius: 0;
+}
+
+.code-window-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 14px;
+  color: var(--quiet);
+  background: rgba(13, 18, 26, 0.82);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.code-window-header span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(69, 208, 232, 0.24);
+}
+
+.code-window-header strong {
+  color: #9aa5b4;
+  font-weight: 650;
 }
 
 .steps {
@@ -591,6 +618,51 @@ code {
 
 .steps p {
   margin: 8px 0 0;
+}
+
+.type-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.type-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 26px;
+  border: 1px solid rgba(146, 160, 180, 0.16);
+  border-radius: 999px;
+  padding: 0 10px;
+  color: #b6c1cf;
+  background: rgba(13, 18, 26, 0.52);
+  font-size: 12px;
+  font-weight: 680;
+}
+
+.type-legend span::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  content: "";
+  background: var(--accent);
+}
+
+.type-legend .issue::before {
+  background: #ffb743;
+}
+
+.type-legend .suggestion::before {
+  background: #6ba6ff;
+}
+
+.type-legend .question::before {
+  background: #b47bff;
+}
+
+.type-legend .praise::before {
+  background: #5be0a2;
 }
 
 .get-started {
@@ -662,7 +734,6 @@ code {
 @media (max-width: 1080px) {
   .intro,
   .workspace,
-  .source-strip,
   .content-grid,
   .feature-rail,
   .syntax-grid,
