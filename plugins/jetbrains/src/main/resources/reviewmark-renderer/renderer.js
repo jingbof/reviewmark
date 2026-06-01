@@ -1632,9 +1632,10 @@ function renderArticle(doc, commentsByBlock) {
   return doc.blocks.map((block) => {
     const comments = commentsByBlock.get(block.index) ?? [];
     const renderedBlock = g.parse(block.markdown, { async: false });
-    const callouts = comments.map(renderCommentCard).join("");
+    const blockId = `block-${block.index + 1}`;
+    const callouts = comments.map((comment) => renderCommentCard(comment, blockId)).join("");
     const hasCommentsClass = comments.length > 0 ? " has-comments" : "";
-    return `<section class="reviewmark-row${hasCommentsClass}" id="block-${block.index + 1}" data-line="${block.startLine ?? ""}">
+    return `<section class="reviewmark-row${hasCommentsClass}" id="${blockId}" data-line="${block.startLine ?? ""}">
   <div class="reviewmark-block">
     <div class="reviewmark-block-content">${renderedBlock}</div>
   </div>
@@ -1644,11 +1645,11 @@ function renderArticle(doc, commentsByBlock) {
 </section>`;
   }).join("\n");
 }
-function renderCommentCard(comment) {
-  const line = comment.startLine ? `<a href="reviewmark://line/${comment.startLine}">line ${comment.startLine}</a>` : "";
+function renderCommentCard(comment, blockId) {
+  const line = comment.startLine ? `<span class="reviewmark-line">line ${comment.startLine}</span>` : "";
   const status = escapeHtml(comment.metadata.status);
   const type = escapeHtml(comment.metadata.type);
-  return `<aside class="reviewmark-comment ${status} ${type}" id="${escapeHtml(comment.id)}" style="--rm-comment-color: var(--rm-${type})">
+  return `<a class="reviewmark-comment ${status} ${type}" id="${escapeHtml(comment.id)}" href="#${blockId}" aria-label="Jump to reviewed Markdown block" style="--rm-comment-color: var(--rm-${type})">
   <header class="reviewmark-comment-header">
     <span class="reviewmark-avatar" aria-hidden="true">${escapeHtml(initials(comment.metadata.author))}</span>
     <span class="reviewmark-comment-meta">
@@ -1662,7 +1663,7 @@ function renderCommentCard(comment) {
     <code>${escapeHtml(comment.id)}</code>
     ${line}
   </footer>
-</aside>`;
+</a>`;
 }
 function renderDiagnostics(doc) {
   if (doc.diagnostics.length === 0) return "";
@@ -1719,10 +1720,10 @@ var REVIEWMARK_CSS = `
     --rm-faint: #687487;
     --rm-border: #222b38;
     --rm-border-strong: #334155;
-    --rm-accent: #58d6bd;
+    --rm-accent: #45d0e8;
     --rm-accent-soft: #0e2425;
     --rm-issue: #f0a45d;
-    --rm-suggestion: #58d6bd;
+    --rm-suggestion: #45d0e8;
     --rm-question: #b596f0;
     --rm-praise: #83e29e;
     --rm-note: #9bb2ff;
@@ -1782,6 +1783,12 @@ body {
 .reviewmark-row.has-comments:hover .reviewmark-block {
   background: color-mix(in srgb, var(--rm-accent) 8%, transparent);
 }
+.reviewmark-row:target .reviewmark-block {
+  background: color-mix(in srgb, var(--rm-accent) 12%, transparent);
+}
+.reviewmark-row:target .reviewmark-block::before {
+  opacity: 1;
+}
 .reviewmark-comment-gutter {
   display: grid;
   gap: 10px;
@@ -1816,16 +1823,27 @@ body {
 }
 .reviewmark-comment {
   --rm-comment-color: var(--rm-note);
+  display: block;
   border: 1px solid var(--rm-border);
   border-left: 2px solid var(--rm-comment-color);
   border-radius: 8px;
   padding: 11px 12px 10px;
   background: var(--rm-paper-soft);
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
   transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
 }
 .reviewmark-row:hover .reviewmark-comment {
   border-color: color-mix(in srgb, var(--rm-comment-color) 46%, var(--rm-border));
   background: color-mix(in srgb, var(--rm-comment-color) 9%, var(--rm-paper-soft));
+}
+.reviewmark-comment:hover {
+  transform: translateY(-1px);
+}
+.reviewmark-comment:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--rm-comment-color) 65%, transparent);
+  outline-offset: 3px;
 }
 .reviewmark-comment.resolved, .reviewmark-comment.rejected { opacity: 0.64; }
 .reviewmark-comment-header { display: flex; align-items: center; gap: 9px; min-width: 0; }
@@ -1887,7 +1905,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.reviewmark-comment-footer a { flex: 0 0 auto; color: var(--rm-comment-color); font-size: 11px; font-weight: 700; text-decoration: none; }
+.reviewmark-line { flex: 0 0 auto; color: var(--rm-comment-color); font-size: 11px; font-weight: 700; }
 .reviewmark-diagnostics { margin-bottom: 24px; padding: 18px 20px; border-radius: 8px; }
 .reviewmark-diagnostics h2 { margin: 0 0 14px; font-size: 16px; }
 .reviewmark-diagnostics li { color: var(--rm-critical); font-size: 14px; }

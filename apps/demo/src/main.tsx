@@ -102,6 +102,18 @@ Resolved: moved team dashboards out of v0 scope.
 type Route = "/" | "/playground" | "/spec" | "/docs" | "/examples";
 const runOnceCommand = "npx reviewmarks preview review.md";
 const installCommand = "npm install -g reviewmarks";
+const syntaxSnippet = `## Matching rules
+
+1. Prefer provider connection provenance.
+
+<!-- reviewmark
+id: rm-scope
+author: Ada
+type: suggestion
+status: open
+~~~
+State whether manual imports follow the same path.
+-->`;
 
 function App() {
   const [route, setRoute] = useState<Route>(readRoute());
@@ -156,8 +168,10 @@ function Header({ route, onNavigate }: { route: Route; onNavigate: (route: Route
       <button className="brand" type="button" onClick={() => onNavigate("/")}>
         <span className="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" role="img">
-            <path d="M5 18.5V6.2A2.2 2.2 0 0 1 7.2 4h9.6A2.2 2.2 0 0 1 19 6.2v7.9a2.2 2.2 0 0 1-2.2 2.2H9.1L5 20v-1.5Z" />
-            <path d="m8.2 11.8 2.7-3.1 2.2 2.2 2.7-3.2" />
+            <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="4.75" />
+            <path d="m7.2 9.4 2.55 2.55-2.55 2.55" />
+            <path d="M12.1 14.5h4.45" />
+            <circle cx="17.1" cy="6.9" r="2.25" />
           </svg>
         </span>
         <span>ReviewMark</span>
@@ -230,8 +244,7 @@ function Playground({
           </p>
         </div>
         <div className="install-card" aria-label="CLI install">
-          <CommandCopy label="Run once" command={runOnceCommand} />
-          <CommandCopy label="Install globally" command={installCommand} />
+          <CommandCopy label="Install CLI" command={installCommand} />
         </div>
         <div className="signal-line" aria-label="Technical details">
           {detailItems.map((item) => (
@@ -294,30 +307,100 @@ function Playground({
         </section>
       </div>
 
-      <section className="strip-preview">
-        <div>
-          <h2>Hidden in source. Visible in review.</h2>
-          <p>ReviewMark comments can be stripped, validated, or rendered without changing the underlying document.</p>
-        </div>
-        <pre>{cleanMarkdown}</pre>
-      </section>
-      <section className="feature-rail" aria-label="ReviewMark capabilities">
+      <HowItWorks cleanMarkdown={cleanMarkdown} />
+      <SyntaxSection />
+      <GetStarted />
+    </section>
+  );
+}
+
+function HowItWorks({ cleanMarkdown }: { cleanMarkdown: string }) {
+  return (
+    <section className="section-block" id="how-it-works">
+      <div className="section-heading">
+        <span>How it works</span>
+        <h2>Comments live in the file. The preview does the review work.</h2>
+        <p>ReviewMark keeps source Markdown portable, then renders hidden comments as anchored annotations.</p>
+      </div>
+      <div className="feature-rail" aria-label="ReviewMark capabilities">
         <article>
           <span>01</span>
-          <h2>Agent skill</h2>
-          <p>Install the ReviewMark skill so coding agents can add and preserve structured Markdown review comments.</p>
+          <h3>Invisible to Markdown renderers</h3>
+          <p>Comments are ordinary HTML comments, so GitHub, npm, and static-site generators keep showing clean Markdown.</p>
         </article>
         <article>
           <span>02</span>
-          <h2>Renderer portable</h2>
-          <p>The same parser powers the browser demo, CLI output, and JetBrains preview.</p>
+          <h3>Anchored to the reviewed block</h3>
+          <p>Each note attaches to the nearest previous Markdown block and renders in the margin beside it.</p>
         </article>
         <article>
           <span>03</span>
-          <h2>Markdown first</h2>
-          <p>Normal Markdown preview stays readable because comments are stored as HTML comments.</p>
+          <h3>Tooling that travels</h3>
+          <p>The same parser powers the browser demo, CLI output, WebStorm preview, and agent skill.</p>
         </article>
-      </section>
+      </div>
+      <div className="source-strip">
+        <div>
+          <h3>Portable source, enhanced preview</h3>
+          <p>Strip or validate ReviewMark comments without changing the underlying document.</p>
+        </div>
+        <pre>{cleanMarkdown}</pre>
+      </div>
+    </section>
+  );
+}
+
+function SyntaxSection() {
+  return (
+    <section className="section-block" id="syntax">
+      <div className="section-heading">
+        <span>Syntax</span>
+        <h2>A normal HTML comment with typed review metadata.</h2>
+        <p>The comment body is Markdown, and the whole block stays invisible to standard CommonMark rendering.</p>
+      </div>
+      <div className="syntax-grid">
+        <pre>{syntaxSnippet}</pre>
+        <div className="steps">
+          <article>
+            <span>1</span>
+            <div>
+              <h3>Open with <code>&lt;!-- reviewmark</code></h3>
+              <p>It is plain Markdown-compatible HTML comment syntax.</p>
+            </div>
+          </article>
+          <article>
+            <span>2</span>
+            <div>
+              <h3>Add metadata</h3>
+              <p><code>id</code>, <code>author</code>, <code>type</code>, and <code>status</code> drive the rendered note.</p>
+            </div>
+          </article>
+          <article>
+            <span>3</span>
+            <div>
+              <h3>Separate body with <code>~~~</code></h3>
+              <p>The body can include Markdown and renders inside the review card.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GetStarted() {
+  return (
+    <section className="section-block get-started" id="get-started">
+      <div className="section-heading">
+        <span>Get started</span>
+        <h2>Install once, then preview or lint any Markdown file.</h2>
+        <p>Use the global CLI for local docs, CI checks, and generated review HTML.</p>
+      </div>
+      <div className="command-stack">
+        <CommandCopy label="Install" command={installCommand} />
+        <CommandCopy label="Preview" command={runOnceCommand.replace("npx reviewmarks", "reviewmark")} />
+        <CommandCopy label="Validate" command="reviewmark validate review.md" />
+      </div>
     </section>
   );
 }
@@ -489,7 +572,7 @@ function forceDarkPreview(html: string): string {
       --rm-ink: #f2f7fb;
       --rm-muted: #8d98a8;
       --rm-border: #222b38;
-      --rm-accent: #58d6bd;
+      --rm-accent: #45d0e8;
       --rm-accent-soft: #0e2425;
       --rm-issue: #ff6f8d;
       --rm-critical: #ff6f9d;
@@ -520,23 +603,23 @@ function forceDarkPreview(html: string): string {
     }
     .reviewmark-block { border-radius: 7px; padding: 13px 16px; }
     .reviewmark-row.has-comments .reviewmark-block::before {
-      background: #58d6bd;
+      background: #45d0e8;
       opacity: 0.8;
     }
     .reviewmark-row.has-comments:hover .reviewmark-block {
-      background: rgba(88, 214, 189, 0.075);
+      background: rgba(69, 208, 232, 0.075);
     }
     .reviewmark-block-content h1 { font-size: 30px; letter-spacing: 0; }
     .reviewmark-block-content h2 { font-size: 22px; margin-top: 0; }
     .reviewmark-block-content { color: #dce4ee; font-size: 14px; line-height: 1.65; }
-    .reviewmark-block-content li::marker { color: #58d6bd; }
+    .reviewmark-block-content li::marker { color: #45d0e8; }
     .reviewmark-comment {
       border-left-width: 2px;
       background: rgba(16, 22, 31, 0.96);
       border-radius: 8px;
     }
     .reviewmark-comment.issue { --rm-comment-color: #ff8a6b; }
-    .reviewmark-comment.suggestion { --rm-comment-color: #58d6bd; }
+    .reviewmark-comment.suggestion { --rm-comment-color: #45d0e8; }
     .reviewmark-comment.question { --rm-comment-color: #b596f0; }
     .reviewmark-comment.praise { --rm-comment-color: #83e29e; }
     @media (max-width: 560px) {
