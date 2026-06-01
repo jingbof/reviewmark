@@ -232,19 +232,21 @@ function Playground({
     <section className="playground" aria-label="ReviewMark live demo">
       <div className="intro">
         <div className="hero-copy">
-          <h1>Review comments for Markdown, without breaking CommonMark.</h1>
+          <h1>Review comments, inside Markdown.</h1>
           <p>
-            ReviewMark keeps annotations in portable Markdown comments, then renders them as a clean review layer beside
-            the document.
+            ReviewMark extends CommonMark with lightweight review comments that sit inside the file, so technical docs,
+            specs, and AI-generated plans can be reviewed without leaving plain text.
           </p>
         </div>
-        <div className="install-card" aria-label="CLI install">
-          <CommandCopy label="Install CLI" command={installCommand} />
-        </div>
-        <div className="signal-line" aria-label="Technical details">
-          {detailItems.map((item) => (
-            <span key={item}>{item}</span>
-          ))}
+        <div className="hero-panel">
+          <div className="install-card" aria-label="CLI install">
+            <CommandCopy label="Install CLI" command={installCommand} />
+          </div>
+          <div className="signal-line" aria-label="Technical details">
+            {detailItems.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
         </div>
       </div>
 
